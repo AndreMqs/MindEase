@@ -1,0 +1,115 @@
+:root {
+  /* Accessibility knobs set by PreferencesEffects */
+  --me-font-size: 16px;
+  --me-spacing: 8px;
+
+  --me-animations: 1;
+  --me-anim-duration: 180ms;
+
+  /* FIAP palette (approx.) */
+  --fiap-red: #E4002B;
+  --fiap-pink: #FF1E4B;
+  --fiap-black: #0A0A0A;
+
+  --me-bg: var(--fiap-black);
+  --me-surface: rgba(228, 0, 43, 0.10);
+  --me-border: rgba(228, 0, 43, 0.35);
+  --me-accent: var(--fiap-red);
+  --me-accent-2: var(--fiap-pink);
+
+  --me-text: #F6F7FB;
+  --me-muted: rgba(255, 255, 255, 0.72);
+
+  font-size: var(--me-font-size);
+}
+
+/* Animations */
+:root[data-me-animations='off'],
+:root[data-me-animations='0'],
+:root[data-me-animations='false'],
+:root[data-me-animations=''] {
+  --me-anim-duration: 0ms;
+}
+:root[data-me-animations='on'] {
+  --me-anim-duration: 180ms;
+}
+
+/* Contrast modes */
+:root[data-me-contrast='normal'] {
+  --me-bg: #0A0A0A;
+  --me-surface: rgba(228, 0, 43, 0.12);
+  --me-border: rgba(228, 0, 43, 0.38);
+  --me-accent: var(--fiap-red);
+  --me-accent-2: var(--fiap-pink);
+  --me-muted: rgba(255, 255, 255, 0.72);
+}
+
+:root[data-me-contrast='high'] {
+  --me-bg: #000000;
+  --me-surface: #0A0A0A;
+  --me-border: rgba(255, 255, 255, 0.18);
+  --me-accent: #FFFFFF;
+  --me-accent-2: #FFFFFF;
+  --me-muted: rgba(255, 255, 255, 0.78);
+}
+
+/* Complexity modes (visual difference must be obvious) */
+:root[data-me-complexity='detailed'][data-me-contrast='normal'] {
+  /* more "FIAP" and more expressive */
+  --me-surface: rgba(228, 0, 43, 0.16);
+  --me-border: rgba(255, 30, 75, 0.60);
+}
+
+body {
+  margin: 0;
+  background: var(--me-bg);
+  color: var(--me-text);
+}
+
+/* Animated background only when animations are ON and detailed */
+:root[data-me-complexity='detailed'][data-me-contrast='normal'][data-me-animations='on'] body {
+  background:
+    radial-gradient(900px 500px at 10% 10%, rgba(255, 30, 75, 0.22), rgba(0, 0, 0, 0) 60%),
+    radial-gradient(700px 400px at 85% 20%, rgba(228, 0, 43, 0.18), rgba(0, 0, 0, 0) 55%),
+    linear-gradient(180deg, #090909 0%, #050505 100%);
+  animation: me-bg-float 9s ease-in-out infinite;
+}
+@keyframes me-bg-float {
+  0%, 100% { filter: saturate(110%); }
+  50% { filter: saturate(130%); }
+}
+
+/* Utility */
+.me-muted { color: var(--me-muted); }
+
+/* Generic animation hook */
+.me-anim {
+  transition: transform var(--me-anim-duration) ease,
+    opacity var(--me-anim-duration) ease,
+    box-shadow var(--me-anim-duration) ease,
+    background var(--me-anim-duration) ease;
+}
+:root[data-me-animations='off'] .me-anim {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Focus Mode: reduce distractions */
+:root[data-me-focus='on'] .me-muted {
+  opacity: 0.55;
+}
+:root[data-me-focus='on'] .me-focus-hide {
+  display: none !important;
+}
+:root[data-me-focus='on'] .me-focus-outline {
+  box-shadow: 0 0 0 3px rgba(255, 30, 75, 0.18) !important;
+}
+
+/* Summary Mode: compact UI */
+:root[data-me-summary='on'] .me-summary-hide {
+  display: none !important;
+}
+:root[data-me-summary='on'] .me-summary-compact {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
