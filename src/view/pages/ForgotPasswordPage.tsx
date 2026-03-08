@@ -57,9 +57,11 @@ export function ForgotPasswordPage() {
             <Typography className="me-muted" sx={{ fontSize: 13 }}>
               (Por enquanto não enviamos e-mail — integração com Firebase em breve.)
             </Typography>
-            <Button component={Link} to="/login" variant="contained" fullWidth sx={{ mt: 1 }}>
-              Voltar ao login
-            </Button>
+            <MuiLink component={Link} to="/login" underline="none" sx={{ display: 'block', mt: 1 }}>
+              <Button variant="contained" fullWidth>
+                Voltar ao login
+              </Button>
+            </MuiLink>
           </Stack>
         ) : (
           <form onSubmit={handleSubmit}>

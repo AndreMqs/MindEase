@@ -4,11 +4,17 @@ import { palette } from './palette'
 
 export function buildMuiTheme(prefs: Preferences) {
   const contrast = prefs.contrast
-  const isHigh = contrast === 'high'
+  const isVeryHigh = contrast === 'veryHigh'
+  const isHigh = contrast === 'high' || isVeryHigh
 
-  const border = isHigh ? palette.borderHighContrast : palette.border
+  const bg = isVeryHigh ? '#000000' : palette.bgMain
+  const paper = isVeryHigh ? '#1a1a1a' : palette.surface
+  const textPrimary = isVeryHigh ? '#FFFFFF' : palette.textPrimary
+  const textSecondary = isVeryHigh ? '#FFFFFF' : palette.textSecondary
+  const border = isVeryHigh ? 'rgba(255,255,255,0.25)' : isHigh ? palette.borderHighContrast : palette.border
 
   return createTheme({
+    spacing: prefs.spacingPx,
     palette: {
       mode: 'dark',
       primary: { main: palette.accent },
@@ -16,12 +22,12 @@ export function buildMuiTheme(prefs: Preferences) {
       success: { main: palette.success },
       warning: { main: palette.warning },
       background: {
-        default: palette.bgMain,
-        paper: palette.surface,
+        default: bg,
+        paper,
       },
       text: {
-        primary: palette.textPrimary,
-        secondary: palette.textSecondary,
+        primary: textPrimary,
+        secondary: textSecondary,
       },
     },
     shape: { borderRadius: 16 },
@@ -32,14 +38,14 @@ export function buildMuiTheme(prefs: Preferences) {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: palette.bgMain,
+            backgroundColor: bg,
           },
         },
       },
       MuiPaper: {
         styleOverrides: {
           root: {
-            backgroundColor: palette.surface,
+            backgroundColor: paper,
             border: `1px solid ${border}`,
             boxShadow: 'none',
           },
@@ -48,7 +54,7 @@ export function buildMuiTheme(prefs: Preferences) {
       MuiCard: {
         styleOverrides: {
           root: {
-            backgroundColor: palette.surface,
+            backgroundColor: paper,
             border: `1px solid ${border}`,
             boxShadow: 'none',
           },
@@ -63,7 +69,7 @@ export function buildMuiTheme(prefs: Preferences) {
           },
           contained: {
             backgroundColor: palette.accent,
-            color: palette.textPrimary,
+            color: textPrimary,
             boxShadow: 'none',
             '&:hover': {
               backgroundColor: palette.accentHover,
@@ -104,7 +110,7 @@ export function buildMuiTheme(prefs: Preferences) {
         styleOverrides: {
           paper: {
             backgroundImage: 'none',
-            backgroundColor: palette.surface,
+            backgroundColor: paper,
             border: `1px solid ${border}`,
           },
         },
@@ -123,13 +129,13 @@ export function buildMuiTheme(prefs: Preferences) {
       },
       MuiSelect: {
         styleOverrides: {
-          icon: { color: palette.textSecondary },
+          icon: { color: textSecondary },
         },
       },
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            backgroundColor: palette.surface,
+            backgroundColor: paper,
             '& .MuiOutlinedInput-notchedOutline': {
               borderColor: border,
             },

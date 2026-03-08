@@ -6,15 +6,14 @@ import { AuthProvider } from './context/AuthContext'
 import { PreferencesEffects } from './context/PreferencesEffects'
 import { usePreferencesVM } from './viewmodels/preferencesVM'
 import { buildMuiTheme } from './theme/muiTheme'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 export function App() {
   const prefs = usePreferencesVM((s) => s.preferences)
   const init = usePreferencesVM((s) => s.init)
-  useMemo(() => {
+  useEffect(() => {
     void init()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [init])
 
   const theme = useMemo(() => buildMuiTheme(prefs), [prefs])
 

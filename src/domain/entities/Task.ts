@@ -20,4 +20,9 @@ export interface Task {
   updatedAtISO: string
   completedAtISO?: string
   order: number
+
+  /** Timer de foco (Pomodoro cognitivo). Em ms. */
+  focusTimerStartedAt?: number
+  /** Quando pausado, timestamp da pausa; elapsed = (focusTimerPausedAt - focusTimerStartedAt) / 1000 */
+  focusTimerPausedAt?: number
 }

@@ -62,7 +62,7 @@ function migrateTask(t: any, fallbackOrder: number): Task {
   const order = typeof t.order === 'number' ? t.order : fallbackOrder
   const pointsAwarded = typeof t.pointsAwarded === 'boolean' ? t.pointsAwarded : status === 'done'
 
-  return {
+  const out: Task = {
     id: String(t.id),
     title: String(t.title ?? ''),
     description: typeof t.description === 'string' ? t.description : undefined,
@@ -75,6 +75,9 @@ function migrateTask(t: any, fallbackOrder: number): Task {
     completedAtISO: typeof t.completedAtISO === 'string' ? t.completedAtISO : undefined,
     order,
   }
+  if (typeof t.focusTimerStartedAt === 'number') out.focusTimerStartedAt = t.focusTimerStartedAt
+  if (typeof t.focusTimerPausedAt === 'number') out.focusTimerPausedAt = t.focusTimerPausedAt
+  return out
 }
 
 function load(): Task[] {

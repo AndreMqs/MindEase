@@ -1,6 +1,6 @@
 export type ComplexityLevel = 'simple' | 'standard' | 'detailed'
 
-export type ContrastLevel = 'normal' | 'high'
+export type ContrastLevel = 'normal' | 'high' | 'veryHigh'
 
 export interface Preferences {
   focusMode: boolean

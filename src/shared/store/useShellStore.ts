@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { container } from '../container'
 import { defaultPreferences, type Preferences } from '../../domain/entities/Preferences'
 
 export type RewardProduct = {

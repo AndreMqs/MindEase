@@ -41,16 +41,17 @@ type PrefsForPalette = { contrast: string; complexity: string }
 
 /** Gera valores das variáveis CSS :root a partir da paleta (fonte única). */
 export function getCssVars(prefs: PrefsForPalette): Record<string, string> {
-  const isHigh = prefs.contrast === 'high'
-  const border = isHigh ? palette.borderHighContrast : (prefs.complexity === 'detailed' ? palette.borderDetailed : palette.border)
-  const muted = isHigh ? palette.textSecondaryHighContrast : palette.textSecondary
+  const isVeryHigh = prefs.contrast === 'veryHigh'
+  const isHigh = prefs.contrast === 'high' || isVeryHigh
+  const border = isVeryHigh ? 'rgba(255,255,255,0.25)' : isHigh ? palette.borderHighContrast : (prefs.complexity === 'detailed' ? palette.borderDetailed : palette.border)
+  const muted = isVeryHigh ? '#FFFFFF' : isHigh ? palette.textSecondaryHighContrast : palette.textSecondary
 
   return {
-    '--me-bg': palette.bgMain,
-    '--me-surface': palette.surface,
-    '--me-surface-secondary': palette.surfaceSecondary,
+    '--me-bg': isVeryHigh ? '#000000' : palette.bgMain,
+    '--me-surface': isVeryHigh ? '#1a1a1a' : palette.surface,
+    '--me-surface-secondary': isVeryHigh ? '#1f1f1f' : palette.surfaceSecondary,
     '--me-border': border,
-    '--me-text': palette.textPrimary,
+    '--me-text': isVeryHigh ? '#FFFFFF' : palette.textPrimary,
     '--me-muted': muted,
     '--me-accent': palette.accent,
     '--me-accent-hover': palette.accentHover,

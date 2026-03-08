@@ -8,7 +8,10 @@ export type CreateTaskInput = {
 }
 
 export class CreateTask {
-  constructor(private readonly repo: TasksRepository) {}
+  private readonly repo: TasksRepository
+  constructor(repo: TasksRepository) {
+    this.repo = repo
+  }
   execute(input: CreateTaskInput): Promise<Task> {
     return this.repo.create({
       title: input.title,

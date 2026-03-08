@@ -1,9 +1,8 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import Divider from '@mui/material/Divider'
-import Collapse from '@mui/material/Collapse'
 import Paper from '@mui/material/Paper'
 import { Select } from '../components/Select'
 import { Switch } from '../components/Switch'
@@ -19,72 +18,78 @@ export function PanelPage() {
     void init()
   }, [init])
 
-  const transitionMs = preferences.animationsEnabled ? 240 : 0
-
-  const complexityHint = useMemo(() => {
-    if (preferences.complexity === 'simple') return 'Mostra só o essencial, com menos distrações.'
-    if (preferences.complexity === 'detailed') return 'Mostra explicações e controles avançados.'
-    return 'Equilíbrio entre simplicidade e controle.'
-  }, [preferences.complexity])
-
   return (
     <Stack spacing={2}>
       <Card
-        title="Painel Cognitivo"
-        subtitle="Ajuste a experiência para reduzir carga cognitiva: contraste, foco, resumo, complexidade e animações."
+        title="🧠 Painel Cognitivo"
+        subtitle="Comportamento funcional: ajuste a experiência para reduzir carga cognitiva (TDAH, TEA, dislexia, burnout, ansiedade)."
         contentSx={{ '&:last-child': { pb: 2.5 } }}
       >
         {error ? <Alert severity="error">{error}</Alert> : null}
 
-        <Stack spacing={2} sx={{ mt: 1 }}>
-          <Select
-            label="Complexidade"
-            value={preferences.complexity}
-            disabled={loading}
-            options={[
-              { value: 'simple', label: 'Simples' },
-              { value: 'standard', label: 'Padrão' },
-              { value: 'detailed', label: 'Detalhado' },
-            ]}
-            onChange={(v) => void patch({ complexity: v })}
-          />
-
-          <Collapse in={preferences.complexity === 'detailed'}>
-            <Card className="me-card me-anim" sx={{ p: 2, border: '1px solid', borderColor: 'primary.main', background: 'rgba(228,0,43,0.12)' }}>
-              <Typography sx={{ fontWeight: 900, mb: 0.5 }}>Modo Detalhado ativado</Typography>
-              <Typography color="text.secondary" sx={{ fontSize: 13 }}>
-                Visual mais chamativo, mais contexto (datas e dicas) e telas com mais informações para acompanhar seu progresso.
-              </Typography>
-            </Card>
-          </Collapse>
-
-          <Collapse in={preferences.complexity === 'simple'}>
-            <Card className="me-card me-anim" sx={{ p: 2 }}>
-              <Typography sx={{ fontWeight: 900, mb: 0.5 }}>Modo Simples</Typography>
-              <Typography color="text.secondary" sx={{ fontSize: 13 }}>
-                Interface enxuta, com menos textos e detalhes — ideal para foco e baixa distração.
-              </Typography>
-            </Card>
-          </Collapse>
-          <Typography color="text.secondary">{complexityHint}</Typography>
+        <Stack spacing={2.5} sx={{ mt: 1 }}>
+          {/* 1️⃣ Complexidade da interface */}
+          <Stack spacing={2}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>1️⃣ Complexidade da interface</Typography>
+            <Select
+              label="Controle"
+              value={preferences.complexity}
+              disabled={loading}
+              options={[
+                { value: 'simple', label: 'Simples — remove elementos secundários' },
+                { value: 'standard', label: 'Padrão — interface normal' },
+                { value: 'detailed', label: 'Detalhado — mostra mais contexto' },
+              ]}
+              onChange={(v) => void patch({ complexity: v })}
+            />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              {preferences.complexity === 'simple' && 'Oculta pontos, chips, contadores, ícones decorativos. Interface mais limpa.'}
+              {preferences.complexity === 'standard' && 'Nada ocultado. Interface atual.'}
+              {preferences.complexity === 'detailed' && 'Exibe contadores, tooltips, metadados das tarefas.'}
+            </Typography>
+          </Stack>
 
           <Divider />
 
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+          {/* 2️⃣ Modo Foco */}
+          <Stack spacing={0.5}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>2️⃣ Modo Foco</Typography>
             <Switch
-              label="Modo foco"
+              label={preferences.focusMode ? 'ON — Remove distrações' : 'OFF — Interface completa'}
               checked={preferences.focusMode}
               disabled={loading}
               onChange={(e) => void patch({ focusMode: e.target.checked })}
             />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              {preferences.focusMode
+                ? 'Esconde: pontos, gamificação, filtros, ordenação, contadores. Ficam apenas Tarefas e Kanban.'
+                : 'Mostra todos os elementos.'}
+            </Typography>
+          </Stack>
+
+          <Divider />
+
+          {/* 3️⃣ Modo Resumo / Detalhado */}
+          <Stack spacing={0.5}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>3️⃣ Modo Resumo</Typography>
             <Switch
-              label="Modo resumo"
+              label={preferences.summaryMode ? 'Resumo — só título da tarefa' : 'Detalhado — título + descrição'}
               checked={preferences.summaryMode}
               disabled={loading}
               onChange={(e) => void patch({ summaryMode: e.target.checked })}
             />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              {preferences.summaryMode ? 'Descrição das tarefas desaparece.' : 'Mostra título e descrição.'}
+            </Typography>
+          </Stack>
+
+          <Divider />
+
+          {/* 4️⃣ Animações */}
+          <Stack spacing={0.5}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>4️⃣ Animações</Typography>
             <Switch
-              label="Animações"
+              label={preferences.animationsEnabled ? 'ON — Transições suaves' : 'OFF — Sem animações'}
               checked={preferences.animationsEnabled}
               disabled={loading}
               onChange={(e) => {
@@ -92,72 +97,91 @@ export function PanelPage() {
                 emit('preferences:animations', { enabled: e.target.checked })
               }}
             />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              {preferences.animationsEnabled ? 'Drag & drop com animação.' : 'Movimentação instantânea (transition: none). Pessoas com sensibilidade vestibular ou ansiedade podem preferir OFF.'}
+            </Typography>
           </Stack>
 
-          <Collapse in={preferences.complexity !== 'simple'} timeout={transitionMs}>
-            <Divider sx={{ my: 2 }} />
-            <Stack spacing={2}>
-              <Select
-                label="Contraste"
-                value={preferences.contrast}
-                disabled={loading}
-                options={[
-                  { value: 'normal', label: 'Normal' },
-                  { value: 'high', label: 'Alto (máxima legibilidade)' },
-                ]}
-                onChange={(v) => void patch({ contrast: v as any })}
-              />
+          <Divider />
 
-              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-                <Select
-                  label="Tamanho de fonte"
-                  value={String(preferences.fontSizePx) as any}
-                  disabled={loading}
-                  options={[
-                    { value: '14', label: '14' },
-                    { value: '16', label: '16' },
-                    { value: '18', label: '18' },
-                  ]}
-                  onChange={(v) => void patch({ fontSizePx: Number(v) })}
-                />
-                <Select
-                  label="Espaçamento"
-                  value={String(preferences.spacingPx) as any}
-                  disabled={loading}
-                  options={[
-                    { value: '6', label: 'Compacto' },
-                    { value: '8', label: 'Padrão' },
-                    { value: '10', label: 'Confortável' },
-                  ]}
-                  onChange={(v) => void patch({ spacingPx: Number(v) })}
-                />
-              </Stack>
-            </Stack>
-          </Collapse>
+          {/* 5️⃣ Contraste */}
+          <Stack spacing={2}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>5️⃣ Contraste</Typography>
+            <Select
+              label="Controle"
+              value={preferences.contrast}
+              disabled={loading}
+              options={[
+                { value: 'normal', label: 'Normal — tema atual' },
+                { value: 'high', label: 'Alto — fundo mais escuro + texto mais claro' },
+                { value: 'veryHigh', label: 'Muito alto — preto puro + branco puro (máxima legibilidade)' },
+              ]}
+              onChange={(v) => void patch({ contrast: v as any })}
+            />
+          </Stack>
 
-          <Collapse in={preferences.complexity === 'detailed'} timeout={transitionMs}>
-            <Divider sx={{ my: 2 }} />
-            <Alert severity="info" variant="outlined">
-              No modo <strong>Detalhado</strong>, você verá mais explicações, contadores e feedbacks visuais nos módulos.
-            </Alert>
-          </Collapse>
+          <Divider />
 
-          <Stack direction="row" spacing={1}>
-            <Paper
-              className={`me-anim ${preferences.animationsEnabled ? 'me-pulse' : ''}`}
-              variant="outlined"
-              sx={{ p: 2, flex: 1 }}
-            >
-              <Typography sx={{ fontWeight: 700 }}>Prévia</Typography>
-              <Typography color="text.secondary">
-                Desative “Animações” para notar transições instantâneas e remoção de efeitos.
-              </Typography>
-            </Paper>
+          {/* 6️⃣ Tamanho da fonte */}
+          <Stack spacing={2}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>6️⃣ Tamanho da fonte</Typography>
+            <Select
+              label="Controle"
+              value={String(preferences.fontSizePx) as any}
+              disabled={loading}
+              options={[
+                { value: '14', label: '14px — texto compacto' },
+                { value: '16', label: '16px — padrão' },
+                { value: '18', label: '18px — acessível' },
+                { value: '20', label: '20px — baixa visão / UI expandida' },
+              ]}
+              onChange={(v) => void patch({ fontSizePx: Number(v) })}
+            />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              Usa variável CSS global (--me-font-size).
+            </Typography>
+          </Stack>
 
-            <Paper variant="outlined" sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
-              <Typography color="text.secondary" sx={{ mr: 1 }}>
-                Reset
-              </Typography>
+          <Divider />
+
+          {/* 7️⃣ Espaçamento */}
+          <Stack spacing={2}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>7️⃣ Espaçamento</Typography>
+            <Select
+              label="Controle"
+              value={String(preferences.spacingPx) as any}
+              disabled={loading}
+              options={[
+                { value: '6', label: 'Compacto — gap menor' },
+                { value: '8', label: 'Padrão — atual' },
+                { value: '10', label: 'Confortável' },
+                { value: '12', label: 'Amplo — mais respiro (recomendado para dislexia e TDAH)' },
+              ]}
+              onChange={(v) => void patch({ spacingPx: Number(v) })}
+            />
+          </Stack>
+
+          <Divider />
+
+          {/* 8️⃣ Alertas cognitivos */}
+          <Stack spacing={0.5}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>8️⃣ Alertas cognitivos</Typography>
+            <Switch
+              label={preferences.cognitiveAlertsEnabled ? 'Ativados' : 'Desativados'}
+              checked={preferences.cognitiveAlertsEnabled}
+              disabled={loading}
+              onChange={(e) => void patch({ cognitiveAlertsEnabled: e.target.checked })}
+            />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              15 min na mesma tarefa → toast leve. 30 min → sugestão de pausa. 45 min → alerta (modal).
+            </Typography>
+          </Stack>
+
+          <Divider />
+
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Paper variant="outlined" sx={{ p: 1.5, display: 'flex', alignItems: 'center' }}>
+              <Typography color="text.secondary" sx={{ mr: 1 }}>Restaurar padrões</Typography>
               <button
                 className="me-link"
                 onClick={() => void reset()}

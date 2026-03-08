@@ -17,3 +17,5 @@ export { default as SearchIcon } from '@mui/icons-material/Search'
 
 export { default as VisibilityIcon } from '@mui/icons-material/Visibility'
 export { default as VisibilityOffIcon } from '@mui/icons-material/VisibilityOff'
+export { default as SettingsIcon } from '@mui/icons-material/Settings'
+export { default as TimerIcon } from '@mui/icons-material/Timer'

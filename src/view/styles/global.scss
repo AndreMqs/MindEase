@@ -70,11 +70,29 @@ body {
   box-shadow: 0 0 0 3px var(--me-focus-outline) !important;
 }
 
-/* Summary Mode: compact UI */
+/* Summary Mode: compact UI + esconde descrição das tarefas */
 :root[data-me-summary='on'] .me-summary-hide {
   display: none !important;
 }
 :root[data-me-summary='on'] .me-summary-compact {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
+}
+:root[data-me-summary='on'] .me-task-description {
+  display: none !important;
+}
+
+/* Complexidade: Simples — oculta pontos, chips, contadores, ícones decorativos */
+:root[data-me-complexity='simple'] .me-complexity-simple-hide {
+  display: none !important;
+}
+/* Complexidade: Detalhado — elementos que só aparecem no modo detalhado */
+.me-complexity-detailed-only {
+  display: none !important;
+}
+:root[data-me-complexity='detailed'] .me-complexity-detailed-only {
+  display: block !important;
+}
+:root[data-me-complexity='detailed'] .me-complexity-detailed-only.inline {
+  display: inline-flex !important;
 }
