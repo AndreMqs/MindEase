@@ -1,24 +1,21 @@
 :root {
-  /* Accessibility knobs set by PreferencesEffects */
+  /* Ajustes de acessibilidade (PreferencesEffects aplica preferências + cores de theme/palette.ts) */
   --me-font-size: 16px;
   --me-spacing: 8px;
-
   --me-animations: 1;
   --me-anim-duration: 180ms;
 
-  /* FIAP palette (approx.) */
-  --fiap-red: #E4002B;
-  --fiap-pink: #FF1E4B;
-  --fiap-black: #0A0A0A;
-
-  --me-bg: var(--fiap-black);
-  --me-surface: rgba(228, 0, 43, 0.10);
-  --me-border: rgba(228, 0, 43, 0.35);
-  --me-accent: var(--fiap-red);
-  --me-accent-2: var(--fiap-pink);
-
-  --me-text: #F6F7FB;
-  --me-muted: rgba(255, 255, 255, 0.72);
+  /* Valores iniciais; cores reais vêm de src/view/theme/palette.ts via PreferencesEffects */
+  --me-bg: #0F1115;
+  --me-surface: #171A21;
+  --me-surface-secondary: #1D2230;
+  --me-border: rgba(255, 255, 255, 0.08);
+  --me-text: #F5F7FA;
+  --me-muted: #AAB2BF;
+  --me-accent: #4C9AFF;
+  --me-accent-hover: #6AAEFF;
+  --me-success: #4CAF50;
+  --me-warning: #F59E0B;
 
   font-size: var(--me-font-size);
 }
@@ -34,31 +31,7 @@
   --me-anim-duration: 180ms;
 }
 
-/* Contrast modes */
-:root[data-me-contrast='normal'] {
-  --me-bg: #0A0A0A;
-  --me-surface: rgba(228, 0, 43, 0.12);
-  --me-border: rgba(228, 0, 43, 0.38);
-  --me-accent: var(--fiap-red);
-  --me-accent-2: var(--fiap-pink);
-  --me-muted: rgba(255, 255, 255, 0.72);
-}
-
-:root[data-me-contrast='high'] {
-  --me-bg: #000000;
-  --me-surface: #0A0A0A;
-  --me-border: rgba(255, 255, 255, 0.18);
-  --me-accent: #FFFFFF;
-  --me-accent-2: #FFFFFF;
-  --me-muted: rgba(255, 255, 255, 0.78);
-}
-
-/* Complexity modes (visual difference must be obvious) */
-:root[data-me-complexity='detailed'][data-me-contrast='normal'] {
-  /* more "FIAP" and more expressive */
-  --me-surface: rgba(228, 0, 43, 0.16);
-  --me-border: rgba(255, 30, 75, 0.60);
-}
+/* Contrast/complexity: variáveis aplicadas por PreferencesEffects a partir de theme/palette.ts */
 
 body {
   margin: 0;
@@ -66,17 +39,9 @@ body {
   color: var(--me-text);
 }
 
-/* Animated background only when animations are ON and detailed */
-:root[data-me-complexity='detailed'][data-me-contrast='normal'][data-me-animations='on'] body {
-  background:
-    radial-gradient(900px 500px at 10% 10%, rgba(255, 30, 75, 0.22), rgba(0, 0, 0, 0) 60%),
-    radial-gradient(700px 400px at 85% 20%, rgba(228, 0, 43, 0.18), rgba(0, 0, 0, 0) 55%),
-    linear-gradient(180deg, #090909 0%, #050505 100%);
-  animation: me-bg-float 9s ease-in-out infinite;
-}
-@keyframes me-bg-float {
-  0%, 100% { filter: saturate(110%); }
-  50% { filter: saturate(130%); }
+/* Sem gradiente vermelho — fundo uniforme e calmo */
+body {
+  background: var(--me-bg);
 }
 
 /* Utility */
@@ -102,7 +67,7 @@ body {
   display: none !important;
 }
 :root[data-me-focus='on'] .me-focus-outline {
-  box-shadow: 0 0 0 3px rgba(255, 30, 75, 0.18) !important;
+  box-shadow: 0 0 0 3px var(--me-focus-outline) !important;
 }
 
 /* Summary Mode: compact UI */

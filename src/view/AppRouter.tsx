@@ -1,8 +1,13 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AppLayout } from './layout/AppLayout'
 import { PanelPage } from './pages/PanelPage'
 import { TasksPage } from './pages/TasksPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { SplashScreen } from './pages/SplashScreen'
+import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
+import { useAuth } from './context/AuthContext'
 
 function NotFound() {
   return (
@@ -15,11 +20,34 @@ function NotFound() {
   )
 }
 
+/** Redireciona para /login se não estiver autenticado. */
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user, isInitialized } = useAuth()
+  const location = useLocation()
+
+  if (!isInitialized) return null
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />
+  }
+  return <>{children}</>
+}
+
 export function AppRouter() {
   return (
     <Routes>
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/panel" replace />} />
+      <Route path="/" element={<Navigate to="/splash" replace />} />
+      <Route path="/splash" element={<SplashScreen />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/cadastro" element={<RegisterPage />} />
+      <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
+
+      <Route
+        element={
+          <AuthGuard>
+            <AppLayout />
+          </AuthGuard>
+        }
+      >
         <Route path="/panel" element={<PanelPage />} />
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/profile" element={<ProfilePage />} />

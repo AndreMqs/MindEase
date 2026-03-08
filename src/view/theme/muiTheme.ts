@@ -1,36 +1,27 @@
 import { createTheme } from '@mui/material/styles'
 import type { Preferences } from '../../domain/entities/Preferences'
-
-const FIAP_RED = '#E4002B'
-const FIAP_PINK = '#FF1E4B'
-const FIAP_DARK = '#0A0A0A'
-const FIAP_SURFACE = '#111217'
+import { palette } from './palette'
 
 export function buildMuiTheme(prefs: Preferences) {
-  const contrast = prefs.contrast // 'normal' | 'high'
-  const isDetailed = prefs.complexity === 'detailed'
+  const contrast = prefs.contrast
   const isHigh = contrast === 'high'
 
-  // More FIAP-like on normal; ultra legible on high.
-  const bg = isHigh ? '#000000' : FIAP_DARK
-  const paper = isHigh ? '#0A0A0A' : FIAP_SURFACE
-
-  // Detailed mode is intentionally more "loud"
-  const primaryMain = isHigh ? '#FFFFFF' : isDetailed ? FIAP_PINK : FIAP_RED
-  const secondaryMain = isHigh ? '#FFFFFF' : FIAP_RED
-
-  const border = isHigh ? 'rgba(255,255,255,0.18)' : isDetailed ? 'rgba(255,30,75,0.55)' : 'rgba(228,0,43,0.40)'
-  const glow = isHigh ? 'none' : isDetailed ? `0 0 0 1px rgba(255,30,75,0.28), 0 0 22px rgba(255,30,75,0.18)` : `0 0 0 1px rgba(228,0,43,0.20)`
+  const border = isHigh ? palette.borderHighContrast : palette.border
 
   return createTheme({
     palette: {
       mode: 'dark',
-      primary: { main: primaryMain },
-      secondary: { main: secondaryMain },
-      background: { default: bg, paper },
+      primary: { main: palette.accent },
+      secondary: { main: palette.accent },
+      success: { main: palette.success },
+      warning: { main: palette.warning },
+      background: {
+        default: palette.bgMain,
+        paper: palette.surface,
+      },
       text: {
-        primary: isHigh ? '#FFFFFF' : '#F6F7FB',
-        secondary: isHigh ? '#D6D7DD' : 'rgba(255,255,255,0.72)',
+        primary: palette.textPrimary,
+        secondary: palette.textSecondary,
       },
     },
     shape: { borderRadius: 16 },
@@ -41,24 +32,25 @@ export function buildMuiTheme(prefs: Preferences) {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: bg,
+            backgroundColor: palette.bgMain,
           },
         },
       },
       MuiPaper: {
         styleOverrides: {
           root: {
+            backgroundColor: palette.surface,
             border: `1px solid ${border}`,
-            boxShadow: glow,
-            backdropFilter: isHigh ? 'none' : 'saturate(110%) blur(6px)',
+            boxShadow: 'none',
           },
         },
       },
       MuiCard: {
         styleOverrides: {
           root: {
+            backgroundColor: palette.surface,
             border: `1px solid ${border}`,
-            boxShadow: glow,
+            boxShadow: 'none',
           },
         },
       },
@@ -70,7 +62,18 @@ export function buildMuiTheme(prefs: Preferences) {
             transition: 'transform var(--me-anim-duration) ease, box-shadow var(--me-anim-duration) ease, background var(--me-anim-duration) ease',
           },
           contained: {
-            boxShadow: isHigh ? 'none' : `0 10px 30px rgba(228,0,43,0.22)`,
+            backgroundColor: palette.accent,
+            color: palette.textPrimary,
+            boxShadow: 'none',
+            '&:hover': {
+              backgroundColor: palette.accentHover,
+              boxShadow: 'none',
+            },
+          },
+          containedSecondary: {
+            '&:hover': {
+              backgroundColor: palette.accentHover,
+            },
           },
         },
       },
@@ -81,12 +84,27 @@ export function buildMuiTheme(prefs: Preferences) {
           },
         },
       },
-      // Fix white dropdown/pickers
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            '&.Mui-selected': {
+              color: palette.accent,
+            },
+          },
+        },
+      },
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+            backgroundColor: palette.accent,
+          },
+        },
+      },
       MuiMenu: {
         styleOverrides: {
           paper: {
             backgroundImage: 'none',
-            backgroundColor: paper,
+            backgroundColor: palette.surface,
             border: `1px solid ${border}`,
           },
         },
@@ -95,31 +113,32 @@ export function buildMuiTheme(prefs: Preferences) {
         styleOverrides: {
           root: {
             '&.Mui-selected': {
-              backgroundColor: isHigh ? 'rgba(255,255,255,0.12)' : 'rgba(228,0,43,0.22)',
+              backgroundColor: palette.menuSelected,
             },
             '&.Mui-selected:hover': {
-              backgroundColor: isHigh ? 'rgba(255,255,255,0.16)' : 'rgba(228,0,43,0.28)',
+              backgroundColor: palette.menuSelectedHover,
             },
           },
         },
       },
       MuiSelect: {
         styleOverrides: {
-          icon: { color: isHigh ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.70)' },
+          icon: { color: palette.textSecondary },
         },
       },
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
+            backgroundColor: palette.surface,
             '& .MuiOutlinedInput-notchedOutline': {
               borderColor: border,
             },
             '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: isHigh ? 'rgba(255,255,255,0.40)' : 'rgba(255,30,75,0.65)',
+              borderColor: isHigh ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.14)',
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: isHigh ? '#FFFFFF' : FIAP_PINK,
-              boxShadow: isHigh ? 'none' : '0 0 0 4px rgba(255,30,75,0.15)',
+              borderColor: palette.accent,
+              boxShadow: `0 0 0 2px ${palette.inputFocusRing}`,
             },
           },
         },

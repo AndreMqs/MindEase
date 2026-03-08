@@ -9,6 +9,7 @@ import { Tabs, Tab } from '../components/Tabs'
 import { Button } from '../components/Button'
 import { usePreferencesVM } from '../viewmodels/preferencesVM'
 import { useShellStore } from '../../shared/store/useShellStore'
+import { useAuth } from '../context/AuthContext'
 import {
   DashboardIcon,
   TaskAltIcon,
@@ -29,8 +30,13 @@ export function AppLayout() {
   const prefs = usePreferencesVM((s) => s.preferences)
   const patch = usePreferencesVM((s) => s.patch)
   const points = useShellStore((s) => s.pointsBalance)
+  const { user, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+
+  const handleLogout = () => {
+    void logout().then(() => navigate('/login', { replace: true }))
+  }
 
   const tab = routeToTab(location.pathname)
 
@@ -39,7 +45,7 @@ export function AppLayout() {
 
   return (
     <Box className="me-container">
-      <Paper className={`me-topbar me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''} ${prefs.focusMode ? 'me-focus-outline' : ''}`} elevation={0} sx={{ p: 2.5 }}>
+      <Paper className={`me-topbar me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''} ${prefs.focusMode ? 'me-focus-outline' : ''}`} elevation={0} sx={{ p: 2.5, backgroundColor: 'var(--me-surface-secondary)' }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ md: 'center' }} justifyContent="space-between">
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: -0.5 }}>
@@ -67,6 +73,10 @@ export function AppLayout() {
             >
               {prefs.focusMode ? 'Sair do foco' : 'Modo foco'}
             </Button>
+            <Chip label={user?.email ?? ''} variant="outlined" size="small" sx={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis' }} />
+            <Button variant="outlined" size="small" onClick={handleLogout}>
+              Sair
+            </Button>
           </Stack>
         </Stack>
 
@@ -81,7 +91,7 @@ export function AppLayout() {
 
         <Divider sx={{ my: 2 }} />
 
-        <Paper className={`me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''}`} elevation={0} sx={{ p: 1.2 }}>
+        <Paper className={`me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''}`} elevation={0} sx={{ p: 1.2, backgroundColor: 'var(--me-surface-secondary)' }}>
           <Tabs
             value={tab}
             onChange={(_, v) => navigate(v)}

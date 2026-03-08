@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { usePreferencesVM } from '../viewmodels/preferencesVM'
+import { getCssVars } from '../theme/palette'
 
 export function PreferencesEffects() {
   const prefs = usePreferencesVM((s) => s.preferences)
@@ -13,10 +14,14 @@ export function PreferencesEffects() {
     root.dataset.meAnimations = animations
     root.style.setProperty('--me-anim-duration', prefs.animationsEnabled ? '180ms' : '0ms')
 
-    root.dataset.meContrast = prefs.contrast // 'normal' | 'high'
+    root.dataset.meContrast = prefs.contrast
     root.dataset.meFocus = prefs.focusMode ? 'on' : 'off'
     root.dataset.meComplexity = prefs.complexity
     root.dataset.meSummary = prefs.summaryMode ? 'on' : 'off'
+
+    // Cores da paleta única (theme/palette.ts) aplicadas em :root
+    const cssVars = getCssVars({ contrast: prefs.contrast, complexity: prefs.complexity })
+    Object.entries(cssVars).forEach(([key, value]) => root.style.setProperty(key, value))
   }, [prefs])
 
   return null

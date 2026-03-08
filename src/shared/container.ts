@@ -8,16 +8,19 @@ import { RemoveTask } from '../domain/usecases/RemoveTask'
 
 import { PreferencesRepositoryLocalStorage } from '../infra/repositories/PreferencesRepositoryLocalStorage'
 import { TasksRepositoryLocalStorage } from '../infra/repositories/TasksRepositoryLocalStorage'
+import { FakeAuthRepository } from '../infra/auth/FakeAuthRepository'
 
 // "Composition root". Aqui você troca facilmente do mock/localStorage para Firebase.
 export const container = (() => {
   const preferencesRepo = new PreferencesRepositoryLocalStorage()
   const tasksRepo = new TasksRepositoryLocalStorage()
+  const authRepo = new FakeAuthRepository()
 
   return {
     repos: {
       preferencesRepo,
       tasksRepo,
+      authRepo,
     },
     usecases: {
       getPreferences: new GetPreferences(preferencesRepo),

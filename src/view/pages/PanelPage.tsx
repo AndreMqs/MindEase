@@ -102,7 +102,7 @@ export function PanelPage() {
                 value={preferences.contrast}
                 disabled={loading}
                 options={[
-                  { value: 'normal', label: 'Normal (FIAP)' },
+                  { value: 'normal', label: 'Normal' },
                   { value: 'high', label: 'Alto (máxima legibilidade)' },
                 ]}
                 onChange={(v) => void patch({ contrast: v as any })}
