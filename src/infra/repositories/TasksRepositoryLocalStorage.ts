@@ -40,8 +40,8 @@ const seedTasks = (): Task[] => {
     },
     {
       id: 't3',
-      title: 'Criar notas na Biblioteca',
-      description: 'Criar pastas e notas para organizar anotações da aula.',
+      title: 'Explorar o painel',
+      description: 'Conhecer preferências, tarefas e perfil.',
       status: 'done',
       points: 10,
       pointsAwarded: true,

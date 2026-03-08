@@ -12,10 +12,7 @@ import { useShellStore } from '../../shared/store/useShellStore'
 import {
   DashboardIcon,
   TaskAltIcon,
-  LibraryBooksIcon,
   PersonIcon,
-  ShoppingCartIcon,
-  BarChartIcon,
   StarIcon,
   VisibilityOffIcon,
   VisibilityIcon,
@@ -24,9 +21,6 @@ import {
 function routeToTab(pathname: string) {
   if (pathname.startsWith('/panel')) return '/panel'
   if (pathname.startsWith('/tasks')) return '/tasks'
-  if (pathname.startsWith('/library')) return '/library'
-  if (pathname.startsWith('/summary')) return '/summary'
-  if (pathname.startsWith('/purchases')) return '/purchases'
   if (pathname.startsWith('/profile')) return '/profile'
   return '/panel'
 }
@@ -53,7 +47,7 @@ export function AppLayout() {
             </Typography>
 
             <Typography className="me-muted me-focus-hide" sx={{ mt: 0.2 }}>
-              Painel cognitivo • Tarefas • Biblioteca • Resumo • Compras • Perfil
+              Painel cognitivo • Tarefas • Perfil
             </Typography>
           </Box>
 
@@ -97,9 +91,6 @@ export function AppLayout() {
           >
             <Tab value="/panel" label="Painel" icon={<DashboardIcon />} iconPosition="start" />
             {(showAllTabs || tab === '/tasks') && <Tab value="/tasks" label="Tarefas" icon={<TaskAltIcon />} iconPosition="start" />}
-            {(showAllTabs || tab === '/library') && <Tab value="/library" label="Biblioteca" icon={<LibraryBooksIcon />} iconPosition="start" />}
-            {(showAllTabs || tab === '/summary') && <Tab value="/summary" label="Resumo" icon={<BarChartIcon />} iconPosition="start" />}
-            {(showAllTabs || tab === '/purchases') && <Tab value="/purchases" label="Compras" icon={<ShoppingCartIcon />} iconPosition="start" />}
             {(showAllTabs || tab === '/profile') && <Tab value="/profile" label="Perfil" icon={<PersonIcon />} iconPosition="start" />}
           </Tabs>
         </Paper>
