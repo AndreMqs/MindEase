@@ -76,18 +76,19 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
   },
 
   async move(id, status) {
-    // For small apps, reuse apply() logic so points are awarded consistently
     const prev = get().tasks
-    const next = prev.map((t) =>
-      t.id === id
-        ? {
-            ...t,
-            status,
-            completedAtISO: status === 'done' ? (t.completedAtISO ?? new Date().toISOString()) : undefined,
-            updatedAtISO: new Date().toISOString(),
-          }
-        : t,
-    )
+    const next = prev.map((t) => {
+      if (t.id !== id) return t
+      const updated = {
+        ...t,
+        status,
+        completedAtISO: status === 'done' ? (t.completedAtISO ?? new Date().toISOString()) : undefined,
+        updatedAtISO: new Date().toISOString(),
+      }
+      if (status === 'done' && t.focusTimerStartedAt != null && t.focusTimerPausedAt == null)
+        updated.focusTimerPausedAt = Date.now()
+      return updated
+    })
     await get().apply(next)
   },
 
@@ -98,16 +99,18 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
     const award = useShellStore.getState().awardPointsForTask
 
     const nextWithAwards = next.map((t) => {
+      let out = t
       const old = prevById.get(t.id)
       const transitionedToDone = old && old.status !== 'done' && t.status === 'done'
       const shouldAward = transitionedToDone && !t.pointsAwarded
       if (shouldAward) {
         award(t.id, t.points ?? 0)
-        return { ...t, pointsAwarded: true }
+        out = { ...out, pointsAwarded: true }
       }
-      // if it is done and missing the flag (legacy), fix it
-      if (t.status === 'done' && t.pointsAwarded == null) return { ...t, pointsAwarded: true }
-      return t
+      if (out.status === 'done' && out.pointsAwarded == null) out = { ...out, pointsAwarded: true }
+      if (out.status === 'done' && out.focusTimerStartedAt != null && out.focusTimerPausedAt == null)
+        out = { ...out, focusTimerPausedAt: Date.now() }
+      return out
     })
 
     // Normalize & set locally first (optimistic)

@@ -69,6 +69,7 @@ function formatFocusTime(seconds: number): string {
 }
 
 function isFocusRunning(task: Task): boolean {
+  if (task.status === 'done') return false
   return task.focusTimerStartedAt != null && task.focusTimerPausedAt == null
 }
 
@@ -224,16 +225,18 @@ function TaskCard({
             </Stack>
           ) : null}
 
-          <Stack direction="row" alignItems="center" spacing={0.5} flexWrap="wrap">
-            <Button
-              size="small"
-              variant={focusRunning ? 'contained' : 'outlined'}
-              startIcon={<TimerIcon />}
-              onClick={handleFocusToggle}
-            >
-              {focusRunning ? 'Em foco' : task.focusTimerStartedAt != null ? 'Retomar' : 'Iniciar foco'}
-            </Button>
-          </Stack>
+          {task.status !== 'done' ? (
+            <Stack direction="row" alignItems="center" spacing={0.5} flexWrap="wrap">
+              <Button
+                size="small"
+                variant={focusRunning ? 'contained' : 'outlined'}
+                startIcon={<TimerIcon />}
+                onClick={handleFocusToggle}
+              >
+                {focusRunning ? 'Em foco' : task.focusTimerStartedAt != null ? 'Retomar' : 'Iniciar foco'}
+              </Button>
+            </Stack>
+          ) : null}
 
           {task.description ? (
             <Typography className="me-task-description" color="text.secondary" sx={{ fontSize: 13, lineHeight: 1.35 }}>
