@@ -19,7 +19,6 @@ export function PreferencesEffects() {
     root.dataset.meComplexity = prefs.complexity
     root.dataset.meSummary = prefs.summaryMode ? 'on' : 'off'
 
-    // Cores da paleta única (theme/palette.ts) aplicadas em :root
     const cssVars = getCssVars({ contrast: prefs.contrast, complexity: prefs.complexity })
     Object.entries(cssVars).forEach(([key, value]) => root.style.setProperty(key, value))
   }, [prefs])

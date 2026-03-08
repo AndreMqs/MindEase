@@ -7,6 +7,7 @@ import Paper from '@mui/material/Paper'
 import { Select } from '../components/Select'
 import { Switch } from '../components/Switch'
 import { Card } from '../components/Card'
+import type { ContrastLevel } from '../../domain/entities/Preferences'
 import { usePreferencesVM } from '../viewmodels/preferencesVM'
 import { useShellStore } from '../../shared/store/useShellStore'
 
@@ -28,7 +29,6 @@ export function PanelPage() {
         {error ? <Alert severity="error">{error}</Alert> : null}
 
         <Stack spacing={2.5} sx={{ mt: 1 }}>
-          {/* 1️⃣ Complexidade da interface */}
           <Stack spacing={2}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>1️⃣ Complexidade da interface</Typography>
             <Select
@@ -51,7 +51,6 @@ export function PanelPage() {
 
           <Divider />
 
-          {/* 2️⃣ Modo Foco */}
           <Stack spacing={0.5}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>2️⃣ Modo Foco</Typography>
             <Switch
@@ -69,7 +68,6 @@ export function PanelPage() {
 
           <Divider />
 
-          {/* 3️⃣ Modo Resumo / Detalhado */}
           <Stack spacing={0.5}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>3️⃣ Modo Resumo</Typography>
             <Switch
@@ -85,7 +83,6 @@ export function PanelPage() {
 
           <Divider />
 
-          {/* 4️⃣ Animações */}
           <Stack spacing={0.5}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>4️⃣ Animações</Typography>
             <Switch
@@ -104,10 +101,9 @@ export function PanelPage() {
 
           <Divider />
 
-          {/* 5️⃣ Contraste */}
           <Stack spacing={2}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>5️⃣ Contraste</Typography>
-            <Select
+            <Select<ContrastLevel>
               label="Controle"
               value={preferences.contrast}
               disabled={loading}
@@ -116,18 +112,17 @@ export function PanelPage() {
                 { value: 'high', label: 'Alto — fundo mais escuro + texto mais claro' },
                 { value: 'veryHigh', label: 'Muito alto — preto puro + branco puro (máxima legibilidade)' },
               ]}
-              onChange={(v) => void patch({ contrast: v as any })}
+              onChange={(v) => void patch({ contrast: v })}
             />
           </Stack>
 
           <Divider />
 
-          {/* 6️⃣ Tamanho da fonte */}
           <Stack spacing={2}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>6️⃣ Tamanho da fonte</Typography>
             <Select
               label="Controle"
-              value={String(preferences.fontSizePx) as any}
+              value={String(preferences.fontSizePx) as '14' | '16' | '18' | '20'}
               disabled={loading}
               options={[
                 { value: '14', label: '14px — texto compacto' },
@@ -144,12 +139,11 @@ export function PanelPage() {
 
           <Divider />
 
-          {/* 7️⃣ Espaçamento */}
           <Stack spacing={2}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>7️⃣ Espaçamento</Typography>
             <Select
               label="Controle"
-              value={String(preferences.spacingPx) as any}
+              value={String(preferences.spacingPx) as '6' | '8' | '10' | '12'}
               disabled={loading}
               options={[
                 { value: '6', label: 'Compacto — gap menor' },
@@ -163,7 +157,6 @@ export function PanelPage() {
 
           <Divider />
 
-          {/* 8️⃣ Alertas cognitivos */}
           <Stack spacing={0.5}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>8️⃣ Alertas cognitivos</Typography>
             <Switch

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -146,9 +146,9 @@ function TaskCard({
 
   return (
     <Card
-      ref={setNodeRef as any}
+      ref={setNodeRef as React.RefCallback<HTMLDivElement>}
       className="me-card me-anim"
-      style={style as any}
+      style={style as React.CSSProperties}
       sx={{
         p: 1.25,
         borderRadius: 2,
@@ -259,7 +259,6 @@ function Column({
   title,
   status,
   tasks,
-  activeId: _activeId,
   complexity,
   onRemove,
   onUpdate,
@@ -270,7 +269,6 @@ function Column({
   title: string
   status: TaskStatus
   tasks: Task[]
-  activeId?: string
   complexity: 'simple' | 'standard' | 'detailed'
   onRemove: (id: string) => void
   onUpdate: (task: Task) => void
@@ -282,7 +280,7 @@ function Column({
 
   return (
     <Card
-      ref={setDroppableRef as any}
+      ref={setDroppableRef as React.RefCallback<HTMLDivElement>}
       className="me-card me-anim"
       sx={{
         p: 2,
@@ -357,9 +355,9 @@ export function TasksPage() {
   const [snackOpen, setSnackOpen] = useState(false)
   const [snackMessage, setSnackMessage] = useState('')
   const [alert45Open, setAlert45Open] = useState(false)
+  const [alert45TaskTitle, setAlert45TaskTitle] = useState('')
   const [cognitiveTick, setCognitiveTick] = useState(0)
   const [timerTick, setTimerTick] = useState(0)
-  const alert45TaskRef = useRef<string | null>(null)
   const cognitiveShownRef = useRef<{ taskId: string; shown15: boolean; shown30: boolean; shown45: boolean }>({ taskId: '', shown15: false, shown30: false, shown45: false })
   const pomodoro25ShownRef = useRef<Set<string>>(new Set())
 
@@ -409,7 +407,7 @@ export function TasksPage() {
     const cur = cognitiveShownRef.current
     if (minutes >= 45 && !cur.shown45) {
       cur.shown45 = true
-      alert45TaskRef.current = taskInDoing.title
+      setAlert45TaskTitle(taskInDoing.title)
       setAlert45Open(true)
     } else if (minutes >= 30 && !cur.shown30) {
       cur.shown30 = true
@@ -606,7 +604,7 @@ export function TasksPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Título ou descrição..."
-                InputProps={{ startAdornment: <SearchIcon fontSize="small" /> as any }}
+                InputProps={{ startAdornment: <SearchIcon fontSize="small" /> }}
                 sx={{ minWidth: 240 }}
               />
               <Select
@@ -673,13 +671,13 @@ export function TasksPage() {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
-            <Column title="A fazer" status="todo" tasks={grouped.todo} activeId={activeId} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column title="A fazer" status="todo" tasks={grouped.todo} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Column title="Fazendo" status="doing" tasks={grouped.doing} activeId={activeId} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column title="Fazendo" status="doing" tasks={grouped.doing} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Column title="Feito" status="done" tasks={grouped.done} activeId={activeId} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column title="Feito" status="done" tasks={grouped.done} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
           </Grid>
         </Grid>
 
@@ -704,7 +702,7 @@ export function TasksPage() {
         <DialogTitle>🧠 Pausa sugerida</DialogTitle>
         <DialogContent>
           <Typography>
-            Você está na tarefa &quot;{alert45TaskRef.current ?? ''}&quot; há 45 minutos ou mais.
+            Você está na tarefa &quot;{alert45TaskTitle}&quot; há 45 minutos ou mais.
           </Typography>
           <Typography sx={{ mt: 1 }}>
             Sugerimos uma pausa para manter o foco e o bem-estar.

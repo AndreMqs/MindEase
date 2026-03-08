@@ -63,8 +63,8 @@ export const useShellStore = create<ShellState>()(
           set({ loading: true, error: undefined })
           // Persist middleware hydrates automatically; still keep a hook for future (Firebase/profile, etc.)
           set({ loading: false })
-        } catch (e: any) {
-          set({ loading: false, error: e?.message ?? 'Falha ao carregar preferências' })
+        } catch (e: unknown) {
+          set({ loading: false, error: e instanceof Error ? e.message : 'Falha ao carregar preferências' })
         }
       },
 

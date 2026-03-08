@@ -13,7 +13,6 @@ export interface Task {
   status: TaskStatus
   checklist: ChecklistItem[]
   points: number
-  /** set to true after points are awarded so we never double-count */
   pointsAwarded?: boolean
 
   createdAtISO: string
@@ -21,8 +20,6 @@ export interface Task {
   completedAtISO?: string
   order: number
 
-  /** Timer de foco (Pomodoro cognitivo). Em ms. */
   focusTimerStartedAt?: number
-  /** Quando pausado, timestamp da pausa; elapsed = (focusTimerPausedAt - focusTimerStartedAt) / 1000 */
   focusTimerPausedAt?: number
 }
