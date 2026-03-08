@@ -39,7 +39,7 @@ import { Button } from '../components/Button'
 import { TextField } from '../components/TextField'
 import { Select } from '../components/Select'
 import Checkbox from '@mui/material/Checkbox'
-import { AddIcon, DeleteIcon, DragIndicatorIcon, SearchIcon, TimerIcon } from '../icons'
+import { AddIcon, DeleteIcon, DragIndicatorIcon, EditIcon, SearchIcon, TimerIcon } from '../icons'
 
 type SortKey = 'order' | 'title' | 'updatedAt' | 'createdAt' | 'points'
 
@@ -95,6 +95,7 @@ function TaskCard({
   onRemove,
   onUpdate,
   onMove,
+  onEdit,
   animationsEnabled = true,
   onStartFocus,
 }: {
@@ -103,6 +104,7 @@ function TaskCard({
   onRemove: (id: string) => void
   onUpdate: (task: Task) => void
   onMove: (id: string, status: TaskStatus) => void
+  onEdit?: (task: Task) => void
   animationsEnabled?: boolean
   onStartFocus?: (taskId: string) => void
 }) {
@@ -246,6 +248,13 @@ function TaskCard({
           ) : null}
         </Stack>
 
+        {onEdit ? (
+          <Tooltip title="Editar">
+            <IconButton onClick={() => onEdit(task)} size="small">
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        ) : null}
         <Tooltip title="Remover">
           <IconButton onClick={() => onRemove(task.id)} size="small">
             <DeleteIcon fontSize="small" />
@@ -264,6 +273,7 @@ function Column({
   onRemove,
   onUpdate,
   onMove,
+  onEdit,
   onStartFocus,
   animationsEnabled = true,
 }: {
@@ -274,6 +284,7 @@ function Column({
   onRemove: (id: string) => void
   onUpdate: (task: Task) => void
   onMove: (id: string, status: TaskStatus) => void
+  onEdit?: (task: Task) => void
   onStartFocus?: (taskId: string) => void
   animationsEnabled?: boolean
 }) {
@@ -314,6 +325,7 @@ function Column({
                 onRemove={onRemove}
                 onUpdate={onUpdate}
                 onMove={onMove}
+                onEdit={onEdit}
                 onStartFocus={onStartFocus}
                 animationsEnabled={animationsEnabled}
               />
@@ -345,6 +357,12 @@ export function TasksPage() {
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
   const [points, setPoints] = useState('10')
+  const [newChecklistLabels, setNewChecklistLabels] = useState<string[]>([])
+
+  const [editTask, setEditTask] = useState<Task | null>(null)
+  const [editTitle, setEditTitle] = useState('')
+  const [editDesc, setEditDesc] = useState('')
+  const [editChecklist, setEditChecklist] = useState<ChecklistItem[]>([])
 
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('order')
@@ -486,6 +504,30 @@ export function TasksPage() {
       setCognitiveLimitSnackOpen(true)
     }
   }, [grouped.doing.length, prefs.cognitiveAlertsEnabled])
+
+  const handleOpenEdit = (task: Task) => {
+    setEditTask(task)
+    setEditTitle(task.title)
+    setEditDesc(task.description ?? '')
+    setEditChecklist(task.checklist ?? [])
+  }
+
+  const handleCloseEdit = () => {
+    setEditTask(null)
+  }
+
+  const handleSaveEdit = () => {
+    if (!editTask) return
+    const checklist = editChecklist.filter((it) => it.label.trim()).map((it) => ({ ...it, label: it.label.trim() }))
+    void update({
+      ...editTask,
+      title: editTitle.trim(),
+      description: editDesc.trim() || undefined,
+      checklist,
+      updatedAtISO: new Date().toISOString(),
+    })
+    setEditTask(null)
+  }
 
   const handleMoveOrShowDoneDialog = (id: string, status: TaskStatus) => {
     if (status === 'done') {
@@ -654,15 +696,39 @@ export function TasksPage() {
                 startIcon={<AddIcon />}
                 disabled={!canAdd || loading}
                 onClick={() => {
-                  void add(title, desc, Number(points))
+                  const checklist = newChecklistLabels.filter((l) => l.trim()).map((label) => ({ label: label.trim() }))
+                  void add(title, desc, Number(points), checklist.length > 0 ? checklist : undefined)
                   setTitle('')
                   setDesc('')
                   setPoints('10')
+                  setNewChecklistLabels([])
                 }}
                 fullWidth
               >
                 Add
               </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>Checklist (opcional)</Typography>
+              <Stack direction="row" flexWrap="wrap" alignItems="center" gap={1}>
+                {newChecklistLabels.map((label, i) => (
+                  <Stack key={i} direction="row" alignItems="center" spacing={0.5} sx={{ minWidth: 200 }}>
+                    <TextField
+                      size="small"
+                      placeholder="Item do checklist"
+                      value={label}
+                      onChange={(e) => setNewChecklistLabels((prev) => prev.map((l, j) => (j === i ? e.target.value : l)))}
+                      sx={{ width: 220 }}
+                    />
+                    <IconButton size="small" onClick={() => setNewChecklistLabels((prev) => prev.filter((_, j) => j !== i))} aria-label="Remover item">
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Stack>
+                ))}
+                <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={() => setNewChecklistLabels((prev) => [...prev, ''])}>
+                  Adicionar item
+                </Button>
+              </Stack>
             </Grid>
           </Grid>
 
@@ -679,13 +745,13 @@ export function TasksPage() {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
-            <Column title="A fazer" status="todo" tasks={grouped.todo} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column title="A fazer" status="todo" tasks={grouped.todo} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onEdit={handleOpenEdit} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Column title="Fazendo" status="doing" tasks={grouped.doing} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column title="Fazendo" status="doing" tasks={grouped.doing} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onEdit={handleOpenEdit} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Column title="Feito" status="done" tasks={grouped.done} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column title="Feito" status="done" tasks={grouped.done} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onEdit={handleOpenEdit} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
           </Grid>
         </Grid>
 
@@ -718,6 +784,54 @@ export function TasksPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAlert45Open(false)}>Entendi</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={!!editTask} onClose={handleCloseEdit} maxWidth="sm" fullWidth>
+        <DialogTitle>Editar tarefa</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 0.5 }}>
+            <TextField
+              label="Título"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              placeholder="Título da tarefa"
+              fullWidth
+            />
+            <TextField
+              label="Descrição"
+              value={editDesc}
+              onChange={(e) => setEditDesc(e.target.value)}
+              placeholder="Descrição (opcional)"
+              fullWidth
+              multiline
+              minRows={2}
+            />
+            <Typography variant="subtitle2" color="text.secondary">Checklist</Typography>
+            <Stack spacing={1}>
+              {editChecklist.map((item, i) => (
+                <Stack key={item.id} direction="row" alignItems="center" spacing={0.5}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    placeholder="Item"
+                    value={item.label}
+                    onChange={(e) => setEditChecklist((prev) => prev.map((it, j) => (j === i ? { ...it, label: e.target.value } : it)))}
+                  />
+                  <IconButton size="small" onClick={() => setEditChecklist((prev) => prev.filter((_, j) => j !== i))} aria-label="Remover">
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Stack>
+              ))}
+              <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={() => setEditChecklist((prev) => [...prev, { id: `c_edit_${Date.now()}_${prev.length}`, label: '', done: false }])}>
+                Adicionar item
+              </Button>
+            </Stack>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEdit}>Cancelar</Button>
+          <Button variant="contained" onClick={handleSaveEdit}>Salvar</Button>
         </DialogActions>
       </Dialog>
 

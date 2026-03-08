@@ -8,7 +8,7 @@ type TasksState = {
   error?: string
   tasks: Task[]
   init: () => Promise<void>
-  add: (title: string, description?: string, points?: number) => Promise<void>
+  add: (title: string, description?: string, points?: number, checklist?: { label: string }[]) => Promise<void>
   update: (task: Task) => Promise<void>
   remove: (id: string) => Promise<void>
   move: (id: string, status: TaskStatus) => Promise<void>
@@ -37,13 +37,14 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
     }
   },
 
-  async add(title, description, points = 10) {
+  async add(title, description, points = 10, checklist) {
     set({ loading: true, error: undefined })
     try {
       const created = await container.usecases.createTask.execute({
         title,
         description,
         points,
+        checklist,
       })
       const next = normalizeOrders([created, ...get().tasks])
       set({ tasks: next, loading: false })
