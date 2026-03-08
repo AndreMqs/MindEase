@@ -131,6 +131,13 @@ export const useShellStore = create<ShellState>()(
         completedTaskIds: s.completedTaskIds,
         rewards: s.rewards,
       }),
+      merge: (persisted, current) => {
+        const p = persisted as Partial<ShellState> | null
+        const merged: ShellState = { ...current, ...(p && typeof p === 'object' ? p : {}) }
+        if (merged.preferences && typeof merged.preferences === 'object')
+          merged.preferences = { ...defaultPreferences, ...merged.preferences }
+        return merged
+      },
     },
   ),
 )

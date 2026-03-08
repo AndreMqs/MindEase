@@ -1,13 +1,16 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AppLayout } from './layout/AppLayout'
-import { PanelPage } from './pages/PanelPage'
-import { TasksPage } from './pages/TasksPage'
-import { ProfilePage } from './pages/ProfilePage'
 import { SplashScreen } from './pages/SplashScreen'
-import { LoginPage } from './pages/LoginPage'
-import { RegisterPage } from './pages/RegisterPage'
-import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
 import { useAuth } from './context/AuthContext'
+
+const PanelPage = lazy(() => import('./pages/PanelPage').then((m) => ({ default: m.PanelPage })))
+const TasksPage = lazy(() => import('./pages/TasksPage').then((m) => ({ default: m.TasksPage })))
+const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })))
+const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })))
+const RegisterPage = lazy(() => import('./pages/RegisterPage').then((m) => ({ default: m.RegisterPage })))
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })))
+const TermsPage = lazy(() => import('./pages/TermsPage').then((m) => ({ default: m.TermsPage })))
 
 function NotFound() {
   return (
@@ -34,25 +37,28 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
 export function AppRouter() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/splash" replace />} />
-      <Route path="/splash" element={<SplashScreen />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/cadastro" element={<RegisterPage />} />
-      <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
+    <Suspense fallback={<SplashScreen />}>
+      <Routes>
+        <Route path="/" element={<Navigate to="/splash" replace />} />
+        <Route path="/splash" element={<SplashScreen />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/cadastro" element={<RegisterPage />} />
+        <Route path="/termos-de-uso" element={<TermsPage />} />
+        <Route path="/esqueci-senha" element={<ForgotPasswordPage />} />
 
-      <Route
-        element={
-          <AuthGuard>
-            <AppLayout />
-          </AuthGuard>
-        }
-      >
-        <Route path="/panel" element={<PanelPage />} />
-        <Route path="/tasks" element={<TasksPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
+        <Route
+          element={
+            <AuthGuard>
+              <AppLayout />
+            </AuthGuard>
+          }
+        >
+          <Route path="/panel" element={<PanelPage />} />
+          <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </Suspense>
   )
 }

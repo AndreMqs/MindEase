@@ -31,6 +31,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 
 import type { Task, TaskStatus, ChecklistItem } from '../../domain/entities/Task'
+import { ROUTINE_POMODORO } from '../../domain/entities/Preferences'
 import { useTasksVM } from '../viewmodels/tasksVM'
 import { usePreferencesVM } from '../viewmodels/preferencesVM'
 import { Card } from '../components/Card'
@@ -335,7 +336,6 @@ function findContainer(tasks: Task[], id: string): TaskStatus | undefined {
   return t?.status
 }
 
-const POMODORO_MINUTES = 25
 const COGNITIVE_LIMIT_DOING = 3
 
 export function TasksPage() {
@@ -433,18 +433,19 @@ export function TasksPage() {
     return () => clearInterval(id)
   }, [hasAnyFocusRunning])
 
+  const pomodoroMinutes = ROUTINE_POMODORO[prefs.routine].focusMinutes
   useEffect(() => {
     if (!prefs.cognitiveAlertsEnabled) return
     local.forEach((task) => {
       if (!isFocusRunning(task)) return
       const elapsed = getFocusElapsed(task)
-      if (elapsed >= POMODORO_MINUTES * 60 && !pomodoro25ShownRef.current.has(task.id)) {
+      if (elapsed >= pomodoroMinutes * 60 && !pomodoro25ShownRef.current.has(task.id)) {
         pomodoro25ShownRef.current.add(task.id)
-        setSnackMessage(`⏱ Pausa sugerida: você está há ${POMODORO_MINUTES} min em foco. Que tal uma pausa?`)
+        setSnackMessage(`⏱ Pausa sugerida: você está há ${pomodoroMinutes} min em foco. Que tal uma pausa?`)
         setSnackOpen(true)
       }
     })
-  }, [prefs.cognitiveAlertsEnabled, local, timerTick])
+  }, [prefs.cognitiveAlertsEnabled, prefs.routine, pomodoroMinutes, local, timerTick])
 
   const handleStartFocus = (taskId: string) => {
     const task = local.find((t) => t.id === taskId)
@@ -622,6 +623,13 @@ export function TasksPage() {
               />
             </Stack>
           </Stack>
+
+          {prefs.navigationProfile === 'assisted' ? (
+            <Alert severity="info" icon={false}>
+              <Typography component="span" sx={{ fontWeight: 600 }}>💡 Dica</Typography>
+              <Typography component="span" sx={{ ml: 0.5 }}>Você pode arrastar tarefas entre colunas.</Typography>
+            </Alert>
+          ) : null}
 
           <Divider />
 

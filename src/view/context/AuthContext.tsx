@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { User } from '../../domain/entities/User'
+import type { UpdateProfileData } from '../../domain/ports/AuthRepository'
 import { container } from '../../shared/container'
 
 type AuthState = {
@@ -7,9 +8,11 @@ type AuthState = {
   isLoading: boolean
   isInitialized: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, displayName?: string) => Promise<void>
   logout: () => Promise<void>
   sendPasswordResetEmail: (email: string) => Promise<void>
+  updateProfile: (data: UpdateProfileData) => Promise<void>
+  updatePassword: (newPassword: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -46,10 +49,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const register = useCallback(async (email: string, password: string) => {
+  const register = useCallback(async (email: string, password: string, displayName?: string) => {
     setIsLoading(true)
     try {
-      const u = await repo.register(email, password)
+      const u = await repo.register(email, password, displayName)
       setUser(u)
     } finally {
       setIsLoading(false)
@@ -75,6 +78,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  const updateProfile = useCallback(async (data: UpdateProfileData) => {
+    if (!user) return
+    setIsLoading(true)
+    try {
+      await repo.updateProfile(data)
+      setUser({ ...user, ...data, email: data.email ?? user.email, displayName: data.displayName ?? user.displayName })
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user])
+
+  const updatePassword = useCallback(async (newPassword: string) => {
+    setIsLoading(true)
+    try {
+      await repo.updatePassword(newPassword)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
   const value: AuthState = {
     user,
     isLoading,
@@ -83,6 +106,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     register,
     logout,
     sendPasswordResetEmail,
+    updateProfile,
+    updatePassword,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

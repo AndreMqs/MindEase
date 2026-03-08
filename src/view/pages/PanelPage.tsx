@@ -7,7 +7,8 @@ import Paper from '@mui/material/Paper'
 import { Select } from '../components/Select'
 import { Switch } from '../components/Switch'
 import { Card } from '../components/Card'
-import type { ContrastLevel } from '../../domain/entities/Preferences'
+import type { ContrastLevel, NavigationProfile, RoutineType, CognitiveCondition } from '../../domain/entities/Preferences'
+import { COGNITIVE_PRESETS, ROUTINE_POMODORO } from '../../domain/entities/Preferences'
 import { usePreferencesVM } from '../viewmodels/preferencesVM'
 import { useShellStore } from '../../shared/store/useShellStore'
 
@@ -168,6 +169,70 @@ export function PanelPage() {
             <Typography color="text.secondary" sx={{ fontSize: 13 }}>
               15 min na mesma tarefa → toast leve. 30 min → sugestão de pausa. 45 min → alerta (modal).
             </Typography>
+          </Stack>
+
+          <Divider />
+
+          <Stack spacing={2}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>9️⃣ Perfil de navegação</Typography>
+            <Select<NavigationProfile>
+              label="Controle"
+              value={preferences.navigationProfile}
+              disabled={loading}
+              options={[
+                { value: 'standard', label: 'Padrão — interface equilibrada' },
+                { value: 'deepFocus', label: 'Foco profundo — remove distrações' },
+                { value: 'assisted', label: 'Assistido — mais explicações e dicas' },
+              ]}
+              onChange={(v) => void patch({ navigationProfile: v })}
+            />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              {preferences.navigationProfile === 'assisted' && 'Exibe tooltips e dicas (ex.: como arrastar tarefas).'}
+              {preferences.navigationProfile === 'deepFocus' && 'Menos elementos na tela.'}
+              {preferences.navigationProfile === 'standard' && 'Layout normal.'}
+            </Typography>
+          </Stack>
+
+          <Divider />
+
+          <Stack spacing={2}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>🔟 Necessidades específicas</Typography>
+            <Select<CognitiveCondition>
+              label="Controle"
+              value={preferences.cognitiveCondition}
+              disabled={loading}
+              options={[
+                { value: 'none', label: 'Nenhuma — ajustes manuais' },
+                { value: 'adhd', label: 'TDAH — modo foco + menos animações + espaçamento amplo' },
+                { value: 'dyslexia', label: 'Dislexia — fonte maior + espaçamento + contraste alto' },
+                { value: 'anxiety', label: 'Ansiedade digital — menos animações + modo resumo' },
+                { value: 'overload', label: 'Sobrecarga mental — modo resumo + foco + alertas' },
+              ]}
+              onChange={(v) => {
+                if (v === 'none') void patch({ cognitiveCondition: 'none' })
+                else void patch({ ...COGNITIVE_PRESETS[v], cognitiveCondition: v })
+              }}
+            />
+            <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+              Ao escolher uma necessidade, as preferências acima são ajustadas automaticamente. Você pode refiná-las depois.
+            </Typography>
+          </Stack>
+
+          <Divider />
+
+          <Stack spacing={2}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>1️⃣1️⃣ Rotina (Pomodoro)</Typography>
+            <Select<RoutineType>
+              label="Controle"
+              value={preferences.routine}
+              disabled={loading}
+              options={[
+                { value: 'study', label: `Estudo — ${ROUTINE_POMODORO.study.focusMinutes} min foco + ${ROUTINE_POMODORO.study.breakMinutes} min pausa` },
+                { value: 'work', label: `Trabalho — ${ROUTINE_POMODORO.work.focusMinutes} min foco + ${ROUTINE_POMODORO.work.breakMinutes} min pausa` },
+                { value: 'focus', label: `Alta concentração — ${ROUTINE_POMODORO.focus.focusMinutes} min foco + ${ROUTINE_POMODORO.focus.breakMinutes} min pausa` },
+              ]}
+              onChange={(v) => void patch({ routine: v })}
+            />
           </Stack>
 
           <Divider />

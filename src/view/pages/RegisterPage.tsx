@@ -4,6 +4,8 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import MuiLink from '@mui/material/Link'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 import { Card } from '../components/Card'
 import { Button } from '../components/Button'
 import { TextField } from '../components/TextField'
@@ -12,9 +14,11 @@ import { useAuth } from '../context/AuthContext'
 export function RegisterPage() {
   const navigate = useNavigate()
   const { register, isLoading } = useAuth()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,8 +40,12 @@ export function RegisterPage() {
       setError('A senha deve ter pelo menos 6 caracteres.')
       return
     }
+    if (!acceptedTerms) {
+      setError('É necessário aceitar os Termos de Uso para se cadastrar.')
+      return
+    }
     try {
-      await register(email.trim(), password)
+      await register(email.trim(), password, name.trim() || undefined)
       navigate('/panel', { replace: true })
     } catch (err) {
       setError((err as Error).message || 'Erro ao cadastrar.')
@@ -60,11 +68,19 @@ export function RegisterPage() {
           Criar conta
         </Typography>
         <Typography className="me-muted" sx={{ mb: 2, fontSize: 14 }}>
-          Preencha e-mail e senha para se cadastrar.
+          Preencha nome, e-mail e senha para se cadastrar.
         </Typography>
 
         <form onSubmit={handleSubmit}>
           <Stack spacing={2}>
+            <TextField
+              label="Nome"
+              autoComplete="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Seu nome"
+              disabled={isLoading}
+            />
             <TextField
               label="E-mail"
               type="email"
@@ -91,6 +107,23 @@ export function RegisterPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repita a senha"
               disabled={isLoading}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  disabled={isLoading}
+                />
+              }
+              label={
+                <Typography sx={{ fontSize: 14 }}>
+                  Li e aceito os{' '}
+                  <MuiLink component={Link} to="/termos-de-uso" target="_blank" rel="noopener" underline="hover" sx={{ color: 'var(--me-accent)' }}>
+                    Termos de Uso
+                  </MuiLink>
+                </Typography>
+              }
             />
             {error && (
               <Typography color="error" sx={{ fontSize: 14 }}>
