@@ -64,6 +64,10 @@ export function ProfilePage() {
     e.preventDefault()
     setPasswordError('')
     setPasswordSuccess(false)
+    if (!currentPassword.trim()) {
+      setPasswordError('Informe a senha atual.')
+      return
+    }
     if (newPassword.length < 6) {
       setPasswordError('A nova senha deve ter pelo menos 6 caracteres.')
       return
@@ -73,7 +77,7 @@ export function ProfilePage() {
       return
     }
     try {
-      await updatePassword(newPassword)
+      await updatePassword(currentPassword, newPassword)
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
@@ -117,7 +121,7 @@ export function ProfilePage() {
               </Grid>
             </Grid>
             <Alert sx={{ mt: 2 }} severity="info" variant="outlined">
-              Infra está preparada para Firebase. Quando você ligar o Firebase, o passo seguinte é trocar os repositórios LocalStorage pelos Firebase.
+              Dados e preferências sincronizados com o app mobile via Firebase (auth, tarefas, preferências).
             </Alert>
           </>
         )}

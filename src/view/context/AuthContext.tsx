@@ -12,7 +12,7 @@ type AuthState = {
   logout: () => Promise<void>
   sendPasswordResetEmail: (email: string) => Promise<void>
   updateProfile: (data: UpdateProfileData) => Promise<void>
-  updatePassword: (newPassword: string) => Promise<void>
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -36,6 +36,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
+    const unsubscribe = repo.subscribeAuthState?.(setUser)
+    if (unsubscribe) {
+      init()
+      return () => unsubscribe()
+    }
     void init()
   }, [init])
 
@@ -83,20 +88,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true)
     try {
       await repo.updateProfile(data)
-      setUser({ ...user, ...data, email: data.email ?? user.email, displayName: data.displayName ?? user.displayName })
+      setUser({
+        ...user,
+        email: data.email ?? user.email,
+        displayName: data.displayName ?? user.displayName,
+      })
     } finally {
       setIsLoading(false)
     }
   }, [user])
 
-  const updatePassword = useCallback(async (newPassword: string) => {
-    setIsLoading(true)
-    try {
-      await repo.updatePassword(newPassword)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+  const updatePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      setIsLoading(true)
+      try {
+        await repo.updatePassword(currentPassword, newPassword)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    []
+  )
 
   const value: AuthState = {
     user,

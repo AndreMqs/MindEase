@@ -32,6 +32,7 @@ export class CreateTask {
       pointsAwarded: false,
       checklist,
       order: 0,
+      boardId: 'default',
     })
   }
 }

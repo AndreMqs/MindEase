@@ -20,6 +20,9 @@ export interface Task {
   completedAtISO?: string
   order: number
 
+  /** ID do board (único por enquanto: "default") — alinhado ao mobile/Firestore */
+  boardId: string
+
   focusTimerStartedAt?: number
   focusTimerPausedAt?: number
 }

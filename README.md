@@ -4,6 +4,14 @@ Aplicação web de suporte cognitivo (TDAH, TEA, dislexia, burnout, ansiedade): 
 
 ---
 
+## Requisitos
+
+- **Node.js**: versão **20.19+** ou **22.12+** (obrigatório para Vite 7; Node 18 causa erro `crypto.hash is not a function`).
+  - Verificar: `node -v`
+  - Instalar/gerenciar versões: [nvm](https://github.com/nvm-sh/nvm) — `nvm install 20` e `nvm use 20`.
+
+---
+
 ## Como rodar
 
 ```bash
@@ -11,7 +19,7 @@ npm install
 npm run dev
 ```
 
-> Porta padrão: **5173**.
+> Porta padrão: **5173**. Se a porta estiver em uso, rode `npm run dev:alt` (usa 5174) ou encerre o processo: `npx kill-port 5173`.
 
 ```bash
 npm run build    # produção
@@ -39,7 +47,7 @@ npm run preview  # preview do build
 - **Clean Architecture + MVVM**: domínio isolado, casos de uso independentes de UI, adaptadores por interfaces.
 - **Camadas**:
   - **`domain/`** — entidades, portas (repositórios), casos de uso
-  - **`infra/`** — implementações (auth e tarefas em localStorage; Firebase preparado)
+  - **`infra/`** — implementações (auth e tarefas: Firebase ou localStorage conforme config)
   - **`view/`** — páginas, componentes, view models, tema, contexto (Auth, preferências)
   - **`shared/`** — container (DI), store global (shell), utils
 
@@ -49,7 +57,7 @@ npm run preview  # preview do build
 
 ## Features
 
-### Autenticação (mock local; Firebase quando integrar)
+### Autenticação (Firebase Auth; fallback mock local sem .env)
 - Splash, Login, Cadastro, Esqueci senha
 - Cadastro: nome, e-mail, senha, **termos de uso** (página `/termos-de-uso`)
 - Rotas públicas e protegidas com `AuthGuard`
@@ -72,11 +80,11 @@ npm run preview  # preview do build
 
 ### Perfil
 - **Aba Resumo**: preferências em chips, gamificação (pontos, total ganho), aviso sobre Firebase
-- **Aba Dados e conta**: editar nome e e-mail, **alterar senha** (tudo preparado para Firebase)
+- **Aba Dados e conta**: editar nome e e-mail, **alterar senha** (Firebase: senha atual obrigatória)
 
 ### Persistência
-- Preferências e gamificação: **Zustand persist** (localStorage)
-- Auth e tarefas: **localStorage** (FakeAuthRepository, TasksRepositoryLocalStorage)
+- **Com Firebase** (config em `src/lib/firebase.ts` ou `.env`): Auth (Firebase Auth), tarefas e preferências em **Firestore** (`users/{userId}`: profile, preferences, kanban.tasks). **Mesmos contratos do app mobile** — o que fizer na web reflete no mobile e vice-versa.
+- **Sem Firebase** (sem config): Auth e tarefas em **localStorage** (FakeAuthRepository, TasksRepositoryLocalStorage); preferências em localStorage (Zustand persist).
 - Tema e acessibilidade aplicados via `PreferencesEffects` (variáveis CSS e `data-*` no `:root`)
 
 ---
@@ -98,13 +106,15 @@ Ou seja: **está pronto para usar microapps quando quiser**; até lá, o app ún
 
 ---
 
-## Firebase (quando quiser ligar)
+## Firebase (integrado; mesmo projeto do mobile)
 
-1. Criar `.env` a partir de `.env.example` e configurar o Firebase.
-2. Implementar/ajustar `infra/auth/*Firebase.ts` e `infra/repositories/*Firebase.ts`.
-3. Trocar os repositórios no `src/shared/container.ts` (auth e tarefas).
+A web usa **o mesmo projeto Firebase do app mobile** (config em `src/lib/firebase.ts` ou variáveis `VITE_FIREBASE_*` no `.env`). Contratos e estrutura de dados idênticos:
 
-A infra de auth já prevê: login, registro (com nome), logout, esqueci senha, **atualizar perfil** (nome/e-mail) e **alterar senha**.
+- **Auth**: Firebase Auth (login, registro com nome, logout, recuperar senha, atualizar perfil, alterar senha com reautenticação).
+- **Firestore** `users/{userId}`: `profile`, `preferences`, `kanban.tasks` — tarefas e preferências sincronizadas entre web e mobile.
+
+1. Opcional: criar `.env` a partir de `.env.example` e preencher `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, etc. Se não houver `.env`, a app usa a config padrão do mesmo projeto (ver `src/lib/firebase.ts`).
+2. O `container` em `src/shared/container.ts` já escolhe Firebase quando `isFirebaseConfigured` é true; caso contrário usa FakeAuth + LocalStorage.
 
 ---
 

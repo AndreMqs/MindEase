@@ -105,7 +105,7 @@ export function AppLayout() {
               </MenuItem>
               {user?.email && (
                 <MenuItem disabled sx={{ opacity: 0.8 }}>
-                  <ListItemText secondary={user.email} />
+                  <ListItemText secondary={user.email ?? ''} />
                 </MenuItem>
               )}
             </Menu>

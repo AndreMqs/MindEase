@@ -22,6 +22,7 @@ const seedTasks = (): Task[] => {
       createdAtISO: now,
       updatedAtISO: now,
       order: 0,
+      boardId: 'default',
     },
     {
       id: 't2',
@@ -37,6 +38,7 @@ const seedTasks = (): Task[] => {
       createdAtISO: now,
       updatedAtISO: now,
       order: 0,
+      boardId: 'default',
     },
     {
       id: 't3',
@@ -50,6 +52,7 @@ const seedTasks = (): Task[] => {
       updatedAtISO: now,
       completedAtISO: now,
       order: 0,
+      boardId: 'default',
     },
   ]
 }
@@ -74,6 +77,7 @@ function migrateTask(t: Record<string, unknown>, fallbackOrder: number): Task {
     updatedAtISO,
     completedAtISO: typeof t.completedAtISO === 'string' ? t.completedAtISO : undefined,
     order,
+    boardId: typeof t.boardId === 'string' ? t.boardId : 'default',
   }
   if (typeof t.focusTimerStartedAt === 'number') out.focusTimerStartedAt = t.focusTimerStartedAt
   if (typeof t.focusTimerPausedAt === 'number') out.focusTimerPausedAt = t.focusTimerPausedAt
