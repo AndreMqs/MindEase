@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Chip from '@mui/material/Chip'
-import Alert from '@mui/material/Alert'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
@@ -120,9 +119,6 @@ export function ProfilePage() {
                 </Stack>
               </Grid>
             </Grid>
-            <Alert sx={{ mt: 2 }} severity="info" variant="outlined">
-              Dados e preferências sincronizados com o app mobile via Firebase (auth, tarefas, preferências).
-            </Alert>
           </>
         )}
 
