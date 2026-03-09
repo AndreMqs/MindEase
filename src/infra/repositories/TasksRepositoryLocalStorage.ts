@@ -60,7 +60,9 @@ const seedTasks = (): Task[] => {
 function migrateTask(t: Record<string, unknown>, fallbackOrder: number): Task {
   const createdAtISO = typeof t.createdAtISO === 'string' ? t.createdAtISO : nowISO()
   const updatedAtISO = typeof t.updatedAtISO === 'string' ? t.updatedAtISO : createdAtISO
-  const status: TaskStatus = (t.status === 'doing' || t.status === 'done' ? t.status : 'todo') as TaskStatus
+  const status: TaskStatus = (
+    t.status === 'doing' || t.status === 'done' ? t.status : 'todo'
+  ) as TaskStatus
   const points = typeof t.points === 'number' ? t.points : Number(t.points ?? 10)
   const order = typeof t.order === 'number' ? t.order : fallbackOrder
   const pointsAwarded = typeof t.pointsAwarded === 'boolean' ? t.pointsAwarded : status === 'done'

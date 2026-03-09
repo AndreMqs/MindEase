@@ -110,7 +110,9 @@ export const useNotesVM = create<NotesState>()((set, get) => ({
     try {
       const updated = await container.usecases.updateNoteDocument.execute(document)
       set((state) => ({
-        documents: sortDocuments(state.documents.map((item) => (item.id === updated.id ? updated : item))),
+        documents: sortDocuments(
+          state.documents.map((item) => (item.id === updated.id ? updated : item))
+        ),
         saving: false,
       }))
       return updated

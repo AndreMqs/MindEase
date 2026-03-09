@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
@@ -56,16 +57,27 @@ export function AppLayout() {
   const closeConfigMenu = () => setConfigAnchor(null)
 
   return (
-    <Box className="me-container">
+    <Box className="me-container" component="div">
+      <Link href="#main-content" className="me-skip-link">
+        Pular para o conteúdo principal
+      </Link>
       <Paper
+        component="header"
+        role="banner"
         className={`me-topbar me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''} ${prefs.focusMode ? 'me-focus-outline' : ''}`}
         elevation={0}
         sx={{ p: isNotesFocusMode ? 2 : 2.5, backgroundColor: 'var(--me-surface-secondary)' }}
+        aria-label="Cabeçalho da aplicação"
       >
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ md: 'center' }} justifyContent="space-between">
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={2}
+          alignItems={{ md: 'center' }}
+          justifyContent="space-between"
+        >
           {/* Esquerda: marca + navegação principal */}
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: -0.5 }}>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 900, letterSpacing: -0.5 }}>
               MindEase
             </Typography>
             {!isNotesFocusMode ? (
@@ -76,9 +88,26 @@ export function AppLayout() {
           </Box>
 
           {/* Direita: Pontos, Complexidade (ocultos em modo foco ou complexidade simples), Modo foco, Configurações, Sair */}
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
-            <Chip className="me-focus-hide me-complexity-simple-hide" icon={<StarIcon />} label={`Pontos: ${points}`} color="secondary" variant="outlined" />
-            <Chip className="me-focus-hide me-complexity-simple-hide" label={`Complexidade: ${prefs.complexity}`} color="primary" variant="outlined" />
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            flexWrap="wrap"
+            justifyContent={{ xs: 'flex-start', md: 'flex-end' }}
+          >
+            <Chip
+              className="me-focus-hide me-complexity-simple-hide"
+              icon={<StarIcon />}
+              label={`Pontos: ${points}`}
+              color="secondary"
+              variant="outlined"
+            />
+            <Chip
+              className="me-focus-hide me-complexity-simple-hide"
+              label={`Complexidade: ${prefs.complexity}`}
+              color="primary"
+              variant="outlined"
+            />
 
             <Button
               variant={prefs.focusMode ? 'contained' : 'outlined'}
@@ -86,6 +115,10 @@ export function AppLayout() {
               startIcon={prefs.focusMode ? <VisibilityOffIcon /> : <VisibilityIcon />}
               onClick={() => void patch({ focusMode: !prefs.focusMode })}
               className="me-anim"
+              aria-pressed={prefs.focusMode}
+              aria-label={
+                prefs.focusMode ? 'Sair do modo foco' : 'Ativar modo foco para reduzir distrações'
+              }
             >
               {prefs.focusMode ? 'Sair do foco' : 'Modo foco'}
             </Button>
@@ -111,7 +144,9 @@ export function AppLayout() {
                   navigate('/profile')
                 }}
               >
-                <ListItemIcon><PersonIcon fontSize="small" /></ListItemIcon>
+                <ListItemIcon>
+                  <PersonIcon fontSize="small" />
+                </ListItemIcon>
                 <ListItemText>Perfil</ListItemText>
               </MenuItem>
               {user?.email && (
@@ -121,7 +156,12 @@ export function AppLayout() {
               )}
             </Menu>
 
-            <Button variant="outlined" size="small" onClick={handleLogout}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={handleLogout}
+              aria-label="Sair da conta"
+            >
               Sair
             </Button>
           </Stack>
@@ -132,7 +172,9 @@ export function AppLayout() {
             <Typography sx={{ fontWeight: 800 }}>
               Foco ativado: escondendo navegação extra e reduzindo distrações.
             </Typography>
-            <Typography className="me-muted">Você pode desativar no botão “Sair do foco”.</Typography>
+            <Typography className="me-muted">
+              Você pode desativar no botão “Sair do foco”.
+            </Typography>
           </Paper>
         )}
 
@@ -140,8 +182,18 @@ export function AppLayout() {
 
         {/* Na página Perfil: esconder abas e mostrar contexto claro (evita confusão cognitiva) */}
         {isProfilePage ? (
-          <Paper className={`me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''}`} elevation={0} sx={{ p: 1.2, backgroundColor: 'var(--me-surface-secondary)' }}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={1}>
+          <Paper
+            className={`me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''}`}
+            elevation={0}
+            sx={{ p: 1.2, backgroundColor: 'var(--me-surface-secondary)' }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              flexWrap="wrap"
+              gap={1}
+            >
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
                 Você está em <strong>Perfil</strong>
               </Typography>
@@ -157,13 +209,20 @@ export function AppLayout() {
           </Paper>
         ) : isNotesFocusMode ? null : (
           /* Navegação principal: Painel e Tarefas */
-          <Paper className={`me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''}`} elevation={0} sx={{ p: 1.2, backgroundColor: 'var(--me-surface-secondary)' }}>
+          <Paper
+            component="nav"
+            role="navigation"
+            aria-label="Navegação principal"
+            className={`me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''}`}
+            elevation={0}
+            sx={{ p: 1.2, backgroundColor: 'var(--me-surface-secondary)' }}
+          >
             <Tabs
               value={tab}
               onChange={(_, v) => navigate(v)}
               variant="scrollable"
               scrollButtons="auto"
-              aria-label="Navegação principal"
+              aria-label="Menu: Painel, Tarefas, Anotações, Loja"
             >
               <Tab value="/panel" label="Painel" icon={<DashboardIcon />} iconPosition="start" />
               <Tab value="/tasks" label="Tarefas" icon={<TaskAltIcon />} iconPosition="start" />
@@ -174,7 +233,13 @@ export function AppLayout() {
         )}
       </Paper>
 
-      <Box sx={{ mt: isNotesFocusMode ? 1.5 : 2.5 }}>
+      <Box
+        component="main"
+        id="main-content"
+        role="main"
+        sx={{ mt: isNotesFocusMode ? 1.5 : 2.5 }}
+        tabIndex={-1}
+      >
         <Outlet />
       </Box>
     </Box>

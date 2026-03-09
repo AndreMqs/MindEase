@@ -32,8 +32,20 @@ function formatDateLabel(iso: string) {
 
 export function NotesPage() {
   const focusMode = usePreferencesVM((s) => s.preferences.focusMode)
-  const { folders, documents, loading, saving, error, init, createFolder, renameFolder, removeFolder, createDocument, updateDocument, removeDocument } =
-    useNotesVM()
+  const {
+    folders,
+    documents,
+    loading,
+    saving,
+    error,
+    init,
+    createFolder,
+    renameFolder,
+    removeFolder,
+    createDocument,
+    updateDocument,
+    removeDocument,
+  } = useNotesVM()
 
   const [selectedFolderId, setSelectedFolderId] = useState<string>('')
   const [selectedDocumentId, setSelectedDocumentId] = useState<string>('')
@@ -41,7 +53,9 @@ export function NotesPage() {
   const [newDocumentTitle, setNewDocumentTitle] = useState('')
   const [draftTitle, setDraftTitle] = useState('')
   const [draftContent, setDraftContent] = useState('')
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null
+  )
 
   useEffect(() => {
     void init()
@@ -69,7 +83,10 @@ export function NotesPage() {
       setDraftContent('')
       return
     }
-    if (!selectedDocumentId || !visibleDocuments.some((document) => document.id === selectedDocumentId)) {
+    if (
+      !selectedDocumentId ||
+      !visibleDocuments.some((document) => document.id === selectedDocumentId)
+    ) {
       const first = visibleDocuments[0]
       setSelectedDocumentId(first.id)
       setDraftTitle(first.title)
@@ -79,16 +96,17 @@ export function NotesPage() {
 
   const selectedDocument = useMemo(
     () => visibleDocuments.find((document) => document.id === selectedDocumentId) ?? null,
-    [selectedDocumentId, visibleDocuments],
+    [selectedDocumentId, visibleDocuments]
   )
 
   const selectedFolder = useMemo(
     () => folders.find((folder) => folder.id === selectedFolderId) ?? null,
-    [folders, selectedFolderId],
+    [folders, selectedFolderId]
   )
 
   const hasUnsavedChanges = Boolean(
-    selectedDocument && (draftTitle !== selectedDocument.title || draftContent !== selectedDocument.content),
+    selectedDocument &&
+    (draftTitle !== selectedDocument.title || draftContent !== selectedDocument.content)
   )
 
   const isFocusEditorOnly = focusMode
@@ -101,7 +119,10 @@ export function NotesPage() {
       setNewFolderName('')
       setFeedback({ type: 'success', message: 'Pasta criada com sucesso.' })
     } catch (e) {
-      setFeedback({ type: 'error', message: (e as Error).message || 'Não foi possível criar a pasta.' })
+      setFeedback({
+        type: 'error',
+        message: (e as Error).message || 'Não foi possível criar a pasta.',
+      })
     }
   }
 
@@ -113,19 +134,27 @@ export function NotesPage() {
       await renameFolder(selectedFolder.id, nextName)
       setFeedback({ type: 'success', message: 'Pasta renomeada.' })
     } catch (e) {
-      setFeedback({ type: 'error', message: (e as Error).message || 'Não foi possível renomear a pasta.' })
+      setFeedback({
+        type: 'error',
+        message: (e as Error).message || 'Não foi possível renomear a pasta.',
+      })
     }
   }
 
   const handleRemoveFolder = async () => {
     if (!selectedFolder) return
-    const confirmed = window.confirm(`Excluir a pasta \"${selectedFolder.name}\" e todas as anotações dela?`)
+    const confirmed = window.confirm(
+      `Excluir a pasta \"${selectedFolder.name}\" e todas as anotações dela?`
+    )
     if (!confirmed) return
     try {
       await removeFolder(selectedFolder.id)
       setFeedback({ type: 'success', message: 'Pasta e anotações removidas.' })
     } catch (e) {
-      setFeedback({ type: 'error', message: (e as Error).message || 'Não foi possível remover a pasta.' })
+      setFeedback({
+        type: 'error',
+        message: (e as Error).message || 'Não foi possível remover a pasta.',
+      })
     }
   }
 
@@ -139,7 +168,10 @@ export function NotesPage() {
       setNewDocumentTitle('')
       setFeedback({ type: 'success', message: 'Documento criado com sucesso.' })
     } catch (e) {
-      setFeedback({ type: 'error', message: (e as Error).message || 'Não foi possível criar o documento.' })
+      setFeedback({
+        type: 'error',
+        message: (e as Error).message || 'Não foi possível criar o documento.',
+      })
     }
   }
 
@@ -165,7 +197,10 @@ export function NotesPage() {
       setDraftContent(updated.content)
       setFeedback({ type: 'success', message: 'Anotação salva.' })
     } catch (e) {
-      setFeedback({ type: 'error', message: (e as Error).message || 'Não foi possível salvar a anotação.' })
+      setFeedback({
+        type: 'error',
+        message: (e as Error).message || 'Não foi possível salvar a anotação.',
+      })
     }
   }
 
@@ -177,7 +212,10 @@ export function NotesPage() {
       await removeDocument(selectedDocument.id)
       setFeedback({ type: 'success', message: 'Anotação removida.' })
     } catch (e) {
-      setFeedback({ type: 'error', message: (e as Error).message || 'Não foi possível remover a anotação.' })
+      setFeedback({
+        type: 'error',
+        message: (e as Error).message || 'Não foi possível remover a anotação.',
+      })
     }
   }
 
@@ -186,17 +224,28 @@ export function NotesPage() {
       <Stack spacing={2}>
         <Card className="me-card me-anim" sx={{ p: 2.5, minHeight: 'calc(100vh - 130px)' }}>
           {!selectedDocument ? (
-            <Stack spacing={1.5} justifyContent="center" alignItems="center" sx={{ minHeight: 'calc(100vh - 220px)', textAlign: 'center' }}>
+            <Stack
+              spacing={1.5}
+              justifyContent="center"
+              alignItems="center"
+              sx={{ minHeight: 'calc(100vh - 220px)', textAlign: 'center' }}
+            >
               <Typography variant="h5" sx={{ fontWeight: 900 }}>
                 Nenhuma anotação aberta no modo foco
               </Typography>
               <Typography color="text.secondary" sx={{ maxWidth: 460 }}>
-                Abra ou crie uma anotação antes de entrar no modo foco para usar o editor em tela cheia.
+                Abra ou crie uma anotação antes de entrar no modo foco para usar o editor em tela
+                cheia.
               </Typography>
             </Stack>
           ) : (
             <Stack spacing={2} sx={{ height: '100%' }}>
-              <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }} justifyContent="space-between">
+              <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                spacing={1.5}
+                alignItems={{ md: 'center' }}
+                justifyContent="space-between"
+              >
                 <Box>
                   <Typography variant="h5" sx={{ fontWeight: 900 }}>
                     Editor de anotações
@@ -207,16 +256,29 @@ export function NotesPage() {
                 </Box>
 
                 <Stack direction="row" spacing={1}>
-                  <Button variant="outlined" color="inherit" onClick={handleRemoveDocument} disabled={saving}>
+                  <Button
+                    variant="outlined"
+                    color="inherit"
+                    onClick={handleRemoveDocument}
+                    disabled={saving}
+                  >
                     Excluir
                   </Button>
-                  <Button variant="contained" onClick={handleSaveDocument} disabled={!hasUnsavedChanges || saving}>
+                  <Button
+                    variant="contained"
+                    onClick={handleSaveDocument}
+                    disabled={!hasUnsavedChanges || saving}
+                  >
                     Salvar alterações
                   </Button>
                 </Stack>
               </Stack>
 
-              <TextField label="Título" value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} />
+              <TextField
+                label="Título"
+                value={draftTitle}
+                onChange={(e) => setDraftTitle(e.target.value)}
+              />
               <TextField
                 label="Conteúdo"
                 value={draftContent}
@@ -224,20 +286,38 @@ export function NotesPage() {
                 multiline
                 minRows={28}
                 placeholder="Escreva sua anotação aqui..."
-                sx={{ '& .MuiInputBase-root': { minHeight: 'calc(100vh - 340px)', alignItems: 'flex-start' } }}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: 'calc(100vh - 340px)',
+                    alignItems: 'flex-start',
+                  },
+                }}
               />
 
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="space-between" alignItems={{ sm: 'center' }}>
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1}
+                justifyContent="space-between"
+                alignItems={{ sm: 'center' }}
+              >
                 <Typography color="text.secondary" sx={{ fontSize: 13 }}>
                   Última atualização: {formatDateLabel(selectedDocument.updatedAtISO)}
                 </Typography>
-                {hasUnsavedChanges ? <Chip label="Há alterações não salvas" color="warning" variant="outlined" /> : <Chip label="Tudo salvo" color="success" variant="outlined" />}
+                {hasUnsavedChanges ? (
+                  <Chip label="Há alterações não salvas" color="warning" variant="outlined" />
+                ) : (
+                  <Chip label="Tudo salvo" color="success" variant="outlined" />
+                )}
               </Stack>
             </Stack>
           )}
         </Card>
 
-        <Snackbar open={Boolean(feedback)} autoHideDuration={3500} onClose={() => setFeedback(null)}>
+        <Snackbar
+          open={Boolean(feedback)}
+          autoHideDuration={3500}
+          onClose={() => setFeedback(null)}
+        >
           {feedback ? <Alert severity={feedback.type}>{feedback.message}</Alert> : <span />}
         </Snackbar>
 
@@ -255,7 +335,12 @@ export function NotesPage() {
       {!isFocusEditorOnly ? (
         <Card className="me-card me-anim" sx={{ p: 2 }}>
           <Stack spacing={2}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }} justifyContent="space-between">
+            <Stack
+              direction={{ xs: 'column', md: 'row' }}
+              spacing={1.5}
+              alignItems={{ md: 'center' }}
+              justifyContent="space-between"
+            >
               <Box>
                 <Typography variant="h5" sx={{ fontWeight: 900 }}>
                   Anotações
@@ -266,8 +351,16 @@ export function NotesPage() {
               </Box>
 
               <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                <Chip icon={<FolderIcon />} label={`${folders.length} pasta(s)`} variant="outlined" />
-                <Chip icon={<NoteIcon />} label={`${documents.length} documento(s)`} variant="outlined" />
+                <Chip
+                  icon={<FolderIcon />}
+                  label={`${folders.length} pasta(s)`}
+                  variant="outlined"
+                />
+                <Chip
+                  icon={<NoteIcon />}
+                  label={`${documents.length} documento(s)`}
+                  variant="outlined"
+                />
                 {saving ? <Chip label="Salvando..." color="secondary" variant="outlined" /> : null}
               </Stack>
             </Stack>
@@ -292,7 +385,12 @@ export function NotesPage() {
                     onChange={(e) => setNewFolderName(e.target.value)}
                     placeholder="Ex: Matemática"
                   />
-                  <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateFolder} disabled={newFolderName.trim().length < 2 || saving}>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleCreateFolder}
+                    disabled={newFolderName.trim().length < 2 || saving}
+                  >
                     Criar pasta
                   </Button>
 
@@ -300,7 +398,9 @@ export function NotesPage() {
 
                   <List disablePadding sx={{ display: 'grid', gap: 1 }}>
                     {folders.map((folder) => {
-                      const count = documents.filter((document) => document.folderId === folder.id).length
+                      const count = documents.filter(
+                        (document) => document.folderId === folder.id
+                      ).length
                       const isSelected = folder.id === selectedFolderId
                       return (
                         <ListItemButton
@@ -333,21 +433,34 @@ export function NotesPage() {
 
               <Card className="me-card me-anim" sx={{ p: 2 }}>
                 <Stack spacing={1.5}>
-                  <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    spacing={1}
+                  >
                     <Typography variant="h6" sx={{ fontWeight: 900 }}>
                       Documentos
                     </Typography>
                     <Stack direction="row" spacing={0.5}>
                       <Tooltip title="Renomear pasta">
                         <span>
-                          <IconButton size="small" onClick={handleRenameFolder} disabled={!selectedFolder || saving}>
+                          <IconButton
+                            size="small"
+                            onClick={handleRenameFolder}
+                            disabled={!selectedFolder || saving}
+                          >
                             <EditIcon fontSize="small" />
                           </IconButton>
                         </span>
                       </Tooltip>
                       <Tooltip title="Excluir pasta">
                         <span>
-                          <IconButton size="small" onClick={handleRemoveFolder} disabled={!selectedFolder || saving}>
+                          <IconButton
+                            size="small"
+                            onClick={handleRemoveFolder}
+                            disabled={!selectedFolder || saving}
+                          >
                             <DeleteIcon fontSize="small" />
                           </IconButton>
                         </span>
@@ -359,7 +472,9 @@ export function NotesPage() {
                     label="Novo documento"
                     value={newDocumentTitle}
                     onChange={(e) => setNewDocumentTitle(e.target.value)}
-                    placeholder={selectedFolder ? `Ex: Aula de ${selectedFolder.name}` : 'Selecione uma pasta'}
+                    placeholder={
+                      selectedFolder ? `Ex: Aula de ${selectedFolder.name}` : 'Selecione uma pasta'
+                    }
                     disabled={!selectedFolder}
                   />
                   <Button
@@ -409,11 +524,24 @@ export function NotesPage() {
         ) : null}
 
         <Grid item xs={12} md={isFocusEditorOnly ? 12 : 8} lg={isFocusEditorOnly ? 12 : 8.5}>
-          <Card className="me-card me-anim" sx={{ p: 2, minHeight: isFocusEditorOnly ? 'calc(100vh - 220px)' : 620 }}>
+          <Card
+            className="me-card me-anim"
+            sx={{ p: 2, minHeight: isFocusEditorOnly ? 'calc(100vh - 220px)' : 620 }}
+          >
             {!selectedDocument ? (
-              <Stack spacing={1.5} justifyContent="center" alignItems="center" sx={{ minHeight: isFocusEditorOnly ? 'calc(100vh - 300px)' : 520, textAlign: 'center' }}>
+              <Stack
+                spacing={1.5}
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  minHeight: isFocusEditorOnly ? 'calc(100vh - 300px)' : 520,
+                  textAlign: 'center',
+                }}
+              >
                 <Typography variant="h6" sx={{ fontWeight: 900 }}>
-                  {isFocusEditorOnly ? 'Nenhuma anotação aberta no modo foco' : 'Selecione um documento'}
+                  {isFocusEditorOnly
+                    ? 'Nenhuma anotação aberta no modo foco'
+                    : 'Selecione um documento'}
                 </Typography>
                 <Typography color="text.secondary" sx={{ maxWidth: 460 }}>
                   {isFocusEditorOnly
@@ -423,7 +551,12 @@ export function NotesPage() {
               </Stack>
             ) : (
               <Stack spacing={2} sx={{ height: '100%' }}>
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }} justifyContent="space-between">
+                <Stack
+                  direction={{ xs: 'column', md: 'row' }}
+                  spacing={1.5}
+                  alignItems={{ md: 'center' }}
+                  justifyContent="space-between"
+                >
                   <Box>
                     <Typography variant={isFocusEditorOnly ? 'h5' : 'h6'} sx={{ fontWeight: 900 }}>
                       Editor de anotações
@@ -434,16 +567,29 @@ export function NotesPage() {
                   </Box>
 
                   <Stack direction="row" spacing={1}>
-                    <Button variant="outlined" color="inherit" onClick={handleRemoveDocument} disabled={saving}>
+                    <Button
+                      variant="outlined"
+                      color="inherit"
+                      onClick={handleRemoveDocument}
+                      disabled={saving}
+                    >
                       Excluir
                     </Button>
-                    <Button variant="contained" onClick={handleSaveDocument} disabled={!hasUnsavedChanges || saving}>
+                    <Button
+                      variant="contained"
+                      onClick={handleSaveDocument}
+                      disabled={!hasUnsavedChanges || saving}
+                    >
                       Salvar alterações
                     </Button>
                   </Stack>
                 </Stack>
 
-                <TextField label="Título" value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} />
+                <TextField
+                  label="Título"
+                  value={draftTitle}
+                  onChange={(e) => setDraftTitle(e.target.value)}
+                />
                 <TextField
                   label="Conteúdo"
                   value={draftContent}
@@ -451,14 +597,32 @@ export function NotesPage() {
                   multiline
                   minRows={isFocusEditorOnly ? 24 : 18}
                   placeholder="Escreva sua anotação aqui..."
-                  sx={isFocusEditorOnly ? { '& .MuiInputBase-root': { minHeight: 'calc(100vh - 430px)', alignItems: 'flex-start' } } : undefined}
+                  sx={
+                    isFocusEditorOnly
+                      ? {
+                          '& .MuiInputBase-root': {
+                            minHeight: 'calc(100vh - 430px)',
+                            alignItems: 'flex-start',
+                          },
+                        }
+                      : undefined
+                  }
                 />
 
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="space-between" alignItems={{ sm: 'center' }}>
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={1}
+                  justifyContent="space-between"
+                  alignItems={{ sm: 'center' }}
+                >
                   <Typography color="text.secondary" sx={{ fontSize: 13 }}>
                     Última atualização: {formatDateLabel(selectedDocument.updatedAtISO)}
                   </Typography>
-                  {hasUnsavedChanges ? <Chip label="Há alterações não salvas" color="warning" variant="outlined" /> : <Chip label="Tudo salvo" color="success" variant="outlined" />}
+                  {hasUnsavedChanges ? (
+                    <Chip label="Há alterações não salvas" color="warning" variant="outlined" />
+                  ) : (
+                    <Chip label="Tudo salvo" color="success" variant="outlined" />
+                  )}
                 </Stack>
               </Stack>
             )}

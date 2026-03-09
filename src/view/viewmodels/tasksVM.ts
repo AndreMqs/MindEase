@@ -8,7 +8,12 @@ type TasksState = {
   error?: string
   tasks: Task[]
   init: () => Promise<void>
-  add: (title: string, description?: string, points?: number, checklist?: { label: string }[]) => Promise<void>
+  add: (
+    title: string,
+    description?: string,
+    points?: number,
+    checklist?: { label: string }[]
+  ) => Promise<void>
   update: (task: Task) => Promise<void>
   remove: (id: string) => Promise<void>
   move: (id: string, status: TaskStatus) => Promise<void>
@@ -86,7 +91,8 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
       const updated = {
         ...t,
         status,
-        completedAtISO: status === 'done' ? (t.completedAtISO ?? new Date().toISOString()) : undefined,
+        completedAtISO:
+          status === 'done' ? (t.completedAtISO ?? new Date().toISOString()) : undefined,
         updatedAtISO: new Date().toISOString(),
       }
       if (status === 'done' && t.focusTimerStartedAt != null && t.focusTimerPausedAt == null) {
@@ -119,7 +125,11 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
         out = { ...out, pointsAwarded: out.status === 'done' }
       }
 
-      if (out.status === 'done' && out.focusTimerStartedAt != null && out.focusTimerPausedAt == null) {
+      if (
+        out.status === 'done' &&
+        out.focusTimerStartedAt != null &&
+        out.focusTimerPausedAt == null
+      ) {
         out = { ...out, focusTimerPausedAt: Date.now() }
       }
 

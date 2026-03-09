@@ -30,13 +30,16 @@ export class FirestorePreferencesRepositoryImpl {
       ...raw,
       complexity: (raw.complexity as Preferences['complexity']) ?? defaultPreferences.complexity,
       contrast: (raw.contrast as Preferences['contrast']) ?? defaultPreferences.contrast,
-      fontSizePx: typeof raw.fontSizePx === 'number' ? raw.fontSizePx : defaultPreferences.fontSizePx,
+      fontSizePx:
+        typeof raw.fontSizePx === 'number' ? raw.fontSizePx : defaultPreferences.fontSizePx,
       spacingPx: typeof raw.spacingPx === 'number' ? raw.spacingPx : defaultPreferences.spacingPx,
       navigationProfile:
-        (raw.navigationProfile as Preferences['navigationProfile']) ?? defaultPreferences.navigationProfile,
+        (raw.navigationProfile as Preferences['navigationProfile']) ??
+        defaultPreferences.navigationProfile,
       routine: (raw.routine as Preferences['routine']) ?? defaultPreferences.routine,
       cognitiveCondition:
-        (raw.cognitiveCondition as Preferences['cognitiveCondition']) ?? defaultPreferences.cognitiveCondition,
+        (raw.cognitiveCondition as Preferences['cognitiveCondition']) ??
+        defaultPreferences.cognitiveCondition,
     }
   }
 

@@ -36,7 +36,10 @@ export function SplashScreen() {
       }}
       className="me-anim"
     >
-      <Typography variant="h3" sx={{ fontWeight: 900, letterSpacing: -0.5, color: 'var(--me-text)' }}>
+      <Typography
+        variant="h3"
+        sx={{ fontWeight: 900, letterSpacing: -0.5, color: 'var(--me-text)' }}
+      >
         MindEase
       </Typography>
       <Typography className="me-muted" sx={{ fontSize: 15 }}>

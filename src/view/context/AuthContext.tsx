@@ -112,32 +112,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const updateProfile = useCallback(async (data: UpdateProfileData) => {
-    if (!user) return
-    setIsLoading(true)
-    try {
-      await repo.updateProfile(data)
-      setUser({
-        ...user,
-        email: data.email ?? user.email,
-        displayName: data.displayName ?? user.displayName,
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }, [user])
-
-  const updatePassword = useCallback(
-    async (currentPassword: string, newPassword: string) => {
+  const updateProfile = useCallback(
+    async (data: UpdateProfileData) => {
+      if (!user) return
       setIsLoading(true)
       try {
-        await repo.updatePassword(currentPassword, newPassword)
+        await repo.updateProfile(data)
+        setUser({
+          ...user,
+          email: data.email ?? user.email,
+          displayName: data.displayName ?? user.displayName,
+        })
       } finally {
         setIsLoading(false)
       }
     },
-    []
+    [user]
   )
+
+  const updatePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    setIsLoading(true)
+    try {
+      await repo.updatePassword(currentPassword, newPassword)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   const value: AuthState = {
     user,

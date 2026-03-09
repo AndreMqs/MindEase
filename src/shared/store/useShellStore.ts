@@ -60,7 +60,9 @@ type ShellState = {
   syncTaskPoints: (tasks: Pick<Task, 'id' | 'status' | 'points' | 'pointsAwarded'>[]) => void
   addReward: (title: string, cost: number) => void
   removeReward: (id: string) => void
-  redeemReward: (id: string) => { ok: true } | { ok: false; reason: 'INSUFFICIENT_POINTS' | 'NOT_FOUND' }
+  redeemReward: (
+    id: string
+  ) => { ok: true } | { ok: false; reason: 'INSUFFICIENT_POINTS' | 'NOT_FOUND' }
 
   lastGlobalEvent?: GlobalEvent
   emit: (type: string, payload?: unknown) => void
@@ -91,7 +93,10 @@ function getScopedUserId(userId: string | null | undefined): string {
   return userId && userId.trim().length > 0 ? userId : GUEST_USER_ID
 }
 
-function getUserGamification(state: Pick<ShellState, 'activeUserId' | 'gamificationByUser'>, userId?: string | null): UserGamificationState {
+function getUserGamification(
+  state: Pick<ShellState, 'activeUserId' | 'gamificationByUser'>,
+  userId?: string | null
+): UserGamificationState {
   const scopedUserId = getScopedUserId(userId ?? state.activeUserId)
   return state.gamificationByUser[scopedUserId] ?? buildDefaultGamification()
 }
@@ -99,7 +104,7 @@ function getUserGamification(state: Pick<ShellState, 'activeUserId' | 'gamificat
 function applyGamificationForUser(
   state: ShellState,
   userId: string | null,
-  patch?: Partial<UserGamificationState>,
+  patch?: Partial<UserGamificationState>
 ): Partial<ShellState> {
   const scopedUserId = getScopedUserId(userId)
   const currentGamification = getUserGamification(state, scopedUserId)
@@ -122,24 +127,35 @@ function applyGamificationForUser(
   }
 }
 
-function buildPersistedGamification(input: Partial<UserGamificationState> | null | undefined): UserGamificationState {
+function buildPersistedGamification(
+  input: Partial<UserGamificationState> | null | undefined
+): UserGamificationState {
   const fallback = buildDefaultGamification()
   return {
-    pointsBalance: typeof input?.pointsBalance === 'number' ? input.pointsBalance : fallback.pointsBalance,
+    pointsBalance:
+      typeof input?.pointsBalance === 'number' ? input.pointsBalance : fallback.pointsBalance,
     pointsTotalEarned:
-      typeof input?.pointsTotalEarned === 'number' ? input.pointsTotalEarned : fallback.pointsTotalEarned,
+      typeof input?.pointsTotalEarned === 'number'
+        ? input.pointsTotalEarned
+        : fallback.pointsTotalEarned,
     completedTaskIds:
       input?.completedTaskIds && typeof input.completedTaskIds === 'object'
         ? (input.completedTaskIds as Record<string, boolean>)
         : fallback.completedTaskIds,
-    rewards: Array.isArray(input?.rewards) && input?.rewards.length > 0 ? cloneRewards(input.rewards) : fallback.rewards,
+    rewards:
+      Array.isArray(input?.rewards) && input?.rewards.length > 0
+        ? cloneRewards(input.rewards)
+        : fallback.rewards,
     redemptionHistory: Array.isArray(input?.redemptionHistory)
       ? input.redemptionHistory.map((item) => ({ ...item }))
       : fallback.redemptionHistory,
   }
 }
 
-async function persistGamificationForUser(userId: string | null, gamification: UserGamificationState) {
+async function persistGamificationForUser(
+  userId: string | null,
+  gamification: UserGamificationState
+) {
   if (!isFirebaseConfigured || !userId || auth.currentUser?.uid !== userId) return
   try {
     await updateDoc(doc(db, 'users', userId), {
@@ -177,7 +193,10 @@ export const useShellStore = create<ShellState>()(
           set({ loading: true, error: undefined })
           set({ loading: false })
         } catch (e: unknown) {
-          set({ loading: false, error: e instanceof Error ? e.message : 'Falha ao carregar preferências' })
+          set({
+            loading: false,
+            error: e instanceof Error ? e.message : 'Falha ao carregar preferências',
+          })
         }
       },
 
@@ -202,7 +221,9 @@ export const useShellStore = create<ShellState>()(
         if (!isFirebaseConfigured || !userId || auth.currentUser?.uid !== userId) return
         try {
           const snapshot = await getDoc(doc(db, 'users', userId))
-          const raw = snapshot.exists() ? (snapshot.data().gamification as Partial<UserGamificationState> | undefined) : undefined
+          const raw = snapshot.exists()
+            ? (snapshot.data().gamification as Partial<UserGamificationState> | undefined)
+            : undefined
           const hydrated = buildPersistedGamification(raw)
           set((state) => ({ ...applyGamificationForUser(state, userId, hydrated) }))
         } catch {
@@ -258,9 +279,7 @@ export const useShellStore = create<ShellState>()(
       syncTaskPoints: (tasks) => {
         set((state) => {
           const completedTaskIds = Object.fromEntries(
-            tasks
-              .filter((task) => task.status === 'done')
-              .map((task) => [task.id, true as const]),
+            tasks.filter((task) => task.status === 'done').map((task) => [task.id, true as const])
           )
           const pointsTotalEarned = tasks
             .filter((task) => task.status === 'done')
@@ -268,7 +287,7 @@ export const useShellStore = create<ShellState>()(
           const currentGamification = getUserGamification(state)
           const spentPoints = currentGamification.redemptionHistory.reduce(
             (sum, item) => sum + Math.max(0, item.cost),
-            0,
+            0
           )
 
           const nextGamification: UserGamificationState = {
@@ -374,6 +393,6 @@ export const useShellStore = create<ShellState>()(
 
         return merged
       },
-    },
-  ),
+    }
+  )
 )

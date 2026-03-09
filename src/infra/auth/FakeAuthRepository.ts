@@ -45,7 +45,10 @@ export class FakeAuthRepository implements AuthRepository {
       email: normalized,
       displayName: existing?.email === normalized ? (existing.displayName ?? null) : null,
     }
-    this.setStored({ user: { id: user.id, email: user.email ?? '', displayName: user.displayName ?? undefined }, password })
+    this.setStored({
+      user: { id: user.id, email: user.email ?? '', displayName: user.displayName ?? undefined },
+      password,
+    })
     this.currentUser = user
     return user
   }
@@ -54,7 +57,7 @@ export class FakeAuthRepository implements AuthRepository {
     const user: User = {
       id: email.trim().toLowerCase(),
       email: email.trim().toLowerCase(),
-      displayName: (displayName?.trim() || email.trim()) || null,
+      displayName: displayName?.trim() || email.trim() || null,
     }
     this.currentUser = user
     this.setStored({

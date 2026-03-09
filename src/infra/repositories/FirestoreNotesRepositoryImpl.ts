@@ -33,7 +33,8 @@ function getNotes(raw: UserDoc | null): NonNullable<UserDoc['notes']> {
   }
   return {
     folders: raw.notes.folders && typeof raw.notes.folders === 'object' ? raw.notes.folders : {},
-    documents: raw.notes.documents && typeof raw.notes.documents === 'object' ? raw.notes.documents : {},
+    documents:
+      raw.notes.documents && typeof raw.notes.documents === 'object' ? raw.notes.documents : {},
   }
 }
 
@@ -131,7 +132,7 @@ export class FirestoreNotesRepositoryImpl {
 
   async createDocument(
     userId: string,
-    input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>,
+    input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>
   ): Promise<NoteDocument> {
     const notes = await this.getNotesRaw(userId)
     const now = nowISO()

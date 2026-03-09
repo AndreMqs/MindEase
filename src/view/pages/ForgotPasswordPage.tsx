@@ -80,7 +80,13 @@ export function ForgotPasswordPage() {
                   {error}
                 </Typography>
               )}
-              <Button type="submit" variant="contained" fullWidth disabled={isLoading} sx={{ mt: 1 }}>
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={isLoading}
+                sx={{ mt: 1 }}
+              >
                 {isLoading ? 'Enviando…' : 'Enviar instruções'}
               </Button>
             </Stack>
@@ -89,7 +95,12 @@ export function ForgotPasswordPage() {
 
         {!sent && (
           <Typography sx={{ mt: 2, textAlign: 'center' }}>
-            <MuiLink component={Link} to="/login" underline="hover" sx={{ fontSize: 14, color: 'var(--me-accent)' }}>
+            <MuiLink
+              component={Link}
+              to="/login"
+              underline="hover"
+              sx={{ fontSize: 14, color: 'var(--me-accent)' }}
+            >
               Voltar ao login
             </MuiLink>
           </Typography>

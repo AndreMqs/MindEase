@@ -11,7 +11,11 @@ export function buildMuiTheme(prefs: Preferences) {
   const paper = isVeryHigh ? '#1a1a1a' : palette.surface
   const textPrimary = isVeryHigh ? '#FFFFFF' : palette.textPrimary
   const textSecondary = isVeryHigh ? '#FFFFFF' : palette.textSecondary
-  const border = isVeryHigh ? 'rgba(255,255,255,0.25)' : isHigh ? palette.borderHighContrast : palette.border
+  const border = isVeryHigh
+    ? 'rgba(255,255,255,0.25)'
+    : isHigh
+      ? palette.borderHighContrast
+      : palette.border
 
   return createTheme({
     spacing: prefs.spacingPx,
@@ -65,7 +69,8 @@ export function buildMuiTheme(prefs: Preferences) {
           root: {
             textTransform: 'none',
             fontWeight: 800,
-            transition: 'transform var(--me-anim-duration) ease, box-shadow var(--me-anim-duration) ease, background var(--me-anim-duration) ease',
+            transition:
+              'transform var(--me-anim-duration) ease, box-shadow var(--me-anim-duration) ease, background var(--me-anim-duration) ease',
           },
           contained: {
             backgroundColor: palette.accent,

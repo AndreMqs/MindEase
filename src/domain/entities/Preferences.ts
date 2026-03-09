@@ -40,7 +40,10 @@ export const defaultPreferences: Preferences = {
 }
 
 /** Presets aplicados ao selecionar uma necessidade cognitiva. */
-export const COGNITIVE_PRESETS: Record<Exclude<CognitiveCondition, 'none'>, Partial<Preferences>> = {
+export const COGNITIVE_PRESETS: Record<
+  Exclude<CognitiveCondition, 'none'>,
+  Partial<Preferences>
+> = {
   adhd: {
     focusMode: true,
     animationsEnabled: false,
@@ -67,8 +70,9 @@ export const COGNITIVE_PRESETS: Record<Exclude<CognitiveCondition, 'none'>, Part
 }
 
 /** Duração do foco e da pausa por rotina (minutos). */
-export const ROUTINE_POMODORO: Record<RoutineType, { focusMinutes: number; breakMinutes: number }> = {
-  study: { focusMinutes: 20, breakMinutes: 5 },
-  work: { focusMinutes: 45, breakMinutes: 10 },
-  focus: { focusMinutes: 25, breakMinutes: 5 },
-}
+export const ROUTINE_POMODORO: Record<RoutineType, { focusMinutes: number; breakMinutes: number }> =
+  {
+    study: { focusMinutes: 20, breakMinutes: 5 },
+    work: { focusMinutes: 45, breakMinutes: 10 },
+    focus: { focusMinutes: 25, breakMinutes: 5 },
+  }

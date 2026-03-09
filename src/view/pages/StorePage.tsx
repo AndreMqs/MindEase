@@ -66,8 +66,21 @@ function RewardCard({ id, title, cost, pointsBalance, onRedeem, onRemove }: Rewa
           <Stack spacing={0.75} sx={{ minWidth: 0 }}>
             <Typography sx={{ fontWeight: 800, lineHeight: 1.2 }}>{title}</Typography>
             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-              <Chip size="small" icon={<StarIcon sx={{ fontSize: 14 }} />} label={`${cost} pts`} variant="outlined" color={canRedeem ? 'secondary' : 'default'} />
-              {!canRedeem ? <Chip size="small" label="Pontos insuficientes" color="warning" variant="outlined" /> : null}
+              <Chip
+                size="small"
+                icon={<StarIcon sx={{ fontSize: 14 }} />}
+                label={`${cost} pts`}
+                variant="outlined"
+                color={canRedeem ? 'secondary' : 'default'}
+              />
+              {!canRedeem ? (
+                <Chip
+                  size="small"
+                  label="Pontos insuficientes"
+                  color="warning"
+                  variant="outlined"
+                />
+              ) : null}
             </Stack>
           </Stack>
 
@@ -106,9 +119,21 @@ function RedemptionHistoryCard({ item }: { item: RewardRedemption }) {
       }}
     >
       <Stack spacing={0.75}>
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" flexWrap="wrap">
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          justifyContent="space-between"
+          flexWrap="wrap"
+        >
           <Typography sx={{ fontWeight: 700 }}>{item.rewardTitle}</Typography>
-          <Chip size="small" icon={<StarIcon sx={{ fontSize: 14 }} />} label={`-${item.cost} pts`} color="secondary" variant="outlined" />
+          <Chip
+            size="small"
+            icon={<StarIcon sx={{ fontSize: 14 }} />}
+            label={`-${item.cost} pts`}
+            color="secondary"
+            variant="outlined"
+          />
         </Stack>
         <Typography color="text.secondary" sx={{ fontSize: 13 }}>
           Resgatado em {formatRedeemedAt(item.redeemedAtISO)}
@@ -118,7 +143,10 @@ function RedemptionHistoryCard({ item }: { item: RewardRedemption }) {
   )
 }
 
-function sortRewards<T extends { title: string; cost: number }>(items: T[], key: RewardSortKey): T[] {
+function sortRewards<T extends { title: string; cost: number }>(
+  items: T[],
+  key: RewardSortKey
+): T[] {
   const copy = items.slice()
   switch (key) {
     case 'cost-asc':
@@ -133,14 +161,21 @@ function sortRewards<T extends { title: string; cost: number }>(items: T[], key:
 
 export function StorePage() {
   const prefs = usePreferencesVM((s) => s.preferences)
-  const { pointsBalance, rewards, addReward, removeReward, redeemReward, redemptionHistory } = useRewardsVM()
+  const { pointsBalance, rewards, addReward, removeReward, redeemReward, redemptionHistory } =
+    useRewardsVM()
 
   const [title, setTitle] = useState('')
   const [cost, setCost] = useState('50')
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState<RewardSortKey>('cost-desc')
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
-  const [rewardToConfirm, setRewardToConfirm] = useState<{ id: string; title: string; cost: number } | null>(null)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null
+  )
+  const [rewardToConfirm, setRewardToConfirm] = useState<{
+    id: string
+    title: string
+    cost: number
+  } | null>(null)
 
   const canAdd = title.trim().length >= 2 && Number(cost) > 0
 
@@ -168,7 +203,10 @@ export function StorePage() {
       return
     }
     if (pointsBalance < reward.cost) {
-      setFeedback({ type: 'error', message: 'Você não tem pontos suficientes para resgatar esse prêmio.' })
+      setFeedback({
+        type: 'error',
+        message: 'Você não tem pontos suficientes para resgatar esse prêmio.',
+      })
       return
     }
     setRewardToConfirm({ id: reward.id, title: reward.title, cost: reward.cost })
@@ -180,7 +218,10 @@ export function StorePage() {
     if (!result.ok) {
       setFeedback({
         type: 'error',
-        message: result.reason === 'INSUFFICIENT_POINTS' ? 'Você não tem pontos suficientes para resgatar esse prêmio.' : 'Prêmio não encontrado.',
+        message:
+          result.reason === 'INSUFFICIENT_POINTS'
+            ? 'Você não tem pontos suficientes para resgatar esse prêmio.'
+            : 'Prêmio não encontrado.',
       })
       setRewardToConfirm(null)
       return
@@ -198,7 +239,12 @@ export function StorePage() {
     <Stack spacing={2}>
       <Card className="me-card me-anim" sx={{ p: 2 }}>
         <Stack spacing={2}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }} justifyContent="space-between">
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={1.5}
+            alignItems={{ md: 'center' }}
+            justifyContent="space-between"
+          >
             <Box>
               <Typography variant="h5" sx={{ fontWeight: 900 }}>
                 Loja de prêmios
@@ -209,7 +255,12 @@ export function StorePage() {
             </Box>
 
             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-              <Chip icon={<StarIcon />} label={`Saldo atual: ${pointsBalance} pts`} color="secondary" variant="outlined" />
+              <Chip
+                icon={<StarIcon />}
+                label={`Saldo atual: ${pointsBalance} pts`}
+                color="secondary"
+                variant="outlined"
+              />
               <Chip label={`${rewards.length} prêmio(s)`} variant="outlined" />
               <Chip label={`${redemptionHistory.length} resgate(s)`} variant="outlined" />
             </Stack>
@@ -217,8 +268,12 @@ export function StorePage() {
 
           {prefs.navigationProfile === 'assisted' ? (
             <Alert severity="info" icon={false}>
-              <Typography component="span" sx={{ fontWeight: 600 }}>💡 Dica</Typography>
-              <Typography component="span" sx={{ ml: 0.5 }}>Crie recompensas simples e objetivas, como pausas, episódios ou tempo de lazer.</Typography>
+              <Typography component="span" sx={{ fontWeight: 600 }}>
+                💡 Dica
+              </Typography>
+              <Typography component="span" sx={{ ml: 0.5 }}>
+                Crie recompensas simples e objetivas, como pausas, episódios ou tempo de lazer.
+              </Typography>
             </Alert>
           ) : null}
 
@@ -242,7 +297,13 @@ export function StorePage() {
               />
             </Grid>
             <Grid item xs={12} md={3}>
-              <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddReward} disabled={!canAdd} fullWidth>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleAddReward}
+                disabled={!canAdd}
+                fullWidth
+              >
                 Criar prêmio
               </Button>
             </Grid>
@@ -252,12 +313,22 @@ export function StorePage() {
 
       <Card className="me-card me-anim" sx={{ p: 2 }}>
         <Stack spacing={2}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }} justifyContent="space-between">
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={1.5}
+            alignItems={{ md: 'center' }}
+            justifyContent="space-between"
+          >
             <Typography variant="h6" sx={{ fontWeight: 900 }}>
               Recompensas disponíveis
             </Typography>
 
-            <Stack className="me-focus-hide" direction={{ xs: 'column', sm: 'row' }} spacing={1.2} alignItems={{ sm: 'center' }}>
+            <Stack
+              className="me-focus-hide"
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1.2}
+              alignItems={{ sm: 'center' }}
+            >
               <TextField
                 label="Buscar"
                 value={query}
@@ -282,7 +353,9 @@ export function StorePage() {
           <Divider />
 
           {visibleRewards.length === 0 ? (
-            <Typography color="text.secondary">Nenhum prêmio encontrado. Crie o primeiro para começar sua loja.</Typography>
+            <Typography color="text.secondary">
+              Nenhum prêmio encontrado. Crie o primeiro para começar sua loja.
+            </Typography>
           ) : (
             <Grid container spacing={2}>
               {visibleRewards.map((reward) => (
@@ -304,7 +377,12 @@ export function StorePage() {
 
       <Card className="me-card me-anim" sx={{ p: 2 }}>
         <Stack spacing={2}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={1} alignItems={{ md: 'center' }} justifyContent="space-between">
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={1}
+            alignItems={{ md: 'center' }}
+            justifyContent="space-between"
+          >
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 900 }}>
                 Histórico de resgates
@@ -330,15 +408,22 @@ export function StorePage() {
         </Stack>
       </Card>
 
-      <Dialog open={!!rewardToConfirm} onClose={() => setRewardToConfirm(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={!!rewardToConfirm}
+        onClose={() => setRewardToConfirm(null)}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>Confirmar resgate</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5} sx={{ pt: 0.5 }}>
             <Typography>
-              Você quer resgatar <strong>{rewardToConfirm?.title}</strong> por <strong>{rewardToConfirm?.cost ?? 0} pontos</strong>?
+              Você quer resgatar <strong>{rewardToConfirm?.title}</strong> por{' '}
+              <strong>{rewardToConfirm?.cost ?? 0} pontos</strong>?
             </Typography>
             <Alert severity="warning" variant="outlined">
-              Seu saldo após o resgate ficará em <strong>{Math.max(0, pointsBalance - (rewardToConfirm?.cost ?? 0))} pts</strong>.
+              Seu saldo após o resgate ficará em{' '}
+              <strong>{Math.max(0, pointsBalance - (rewardToConfirm?.cost ?? 0))} pts</strong>.
             </Alert>
           </Stack>
         </DialogContent>
@@ -359,7 +444,12 @@ export function StorePage() {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         {feedback ? (
-          <Alert onClose={() => setFeedback(null)} severity={feedback.type} variant="filled" sx={{ width: '100%' }}>
+          <Alert
+            onClose={() => setFeedback(null)}
+            severity={feedback.type}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
             {feedback.message}
           </Alert>
         ) : undefined}

@@ -116,7 +116,10 @@ export class FirestoreTasksRepositoryImpl {
       boardId: input.boardId ?? 'default',
     }
     const kanban = (await this.getKanbanRaw(userId)) ?? { tasks: {}, boards: {} }
-    const tasks = { ...(kanban.tasks ?? {}), [id]: stripUndefined(task as unknown as Record<string, unknown>) }
+    const tasks = {
+      ...(kanban.tasks ?? {}),
+      [id]: stripUndefined(task as unknown as Record<string, unknown>),
+    }
     await this.setKanban(userId, { ...kanban, tasks })
     return task
   }
@@ -124,7 +127,10 @@ export class FirestoreTasksRepositoryImpl {
   async update(userId: string, task: Task): Promise<Task> {
     const updated = { ...task, updatedAtISO: nowISO() }
     const kanban = (await this.getKanbanRaw(userId)) ?? { tasks: {}, boards: {} }
-    const tasks = { ...(kanban.tasks ?? {}), [task.id]: stripUndefined(updated as Record<string, unknown>) }
+    const tasks = {
+      ...(kanban.tasks ?? {}),
+      [task.id]: stripUndefined(updated as Record<string, unknown>),
+    }
     await this.setKanban(userId, { ...kanban, tasks })
     return updated
   }
@@ -143,7 +149,7 @@ export class FirestoreTasksRepositoryImpl {
     const moved: Task = {
       ...found,
       status,
-      completedAtISO: status === 'done' ? found.completedAtISO ?? nowISO() : undefined,
+      completedAtISO: status === 'done' ? (found.completedAtISO ?? nowISO()) : undefined,
       updatedAtISO: nowISO(),
     }
     return this.update(userId, moved)

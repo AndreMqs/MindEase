@@ -56,16 +56,8 @@ export class FirebaseAuthRepository implements AuthRepository {
     return mapFirebaseUserToUser(user)
   }
 
-  async register(
-    email: string,
-    password: string,
-    displayName?: string
-  ): Promise<User> {
-    const { user } = await createUserWithEmailAndPassword(
-      auth,
-      email.trim(),
-      password
-    )
+  async register(email: string, password: string, displayName?: string): Promise<User> {
+    const { user } = await createUserWithEmailAndPassword(auth, email.trim(), password)
     const name = (displayName ?? email.trim()).trim() || email.trim()
     await firebaseUpdateProfile(user, { displayName: name })
     await this.createUserProfile.execute(user.uid, {

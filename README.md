@@ -22,8 +22,10 @@ npm run dev
 > Porta padrão: **5173**. Se a porta estiver em uso, rode `npm run dev:alt` (usa 5174) ou encerre o processo: `npx kill-port 5173`.
 
 ```bash
-npm run build    # produção
-npm run preview  # preview do build
+npm run build        # produção
+npm run preview      # preview do build
+npm run format       # formatar código com Prettier
+npm run format:check # verificar formatação sem alterar
 ```
 
 ---
@@ -86,6 +88,7 @@ npm run preview  # preview do build
 - **Com Firebase** (config em `src/lib/firebase.ts` ou `.env`): Auth (Firebase Auth), tarefas e preferências em **Firestore** (`users/{userId}`: profile, preferences, kanban.tasks). **Mesmos contratos do app mobile** — o que fizer na web reflete no mobile e vice-versa.
 - **Sem Firebase** (sem config): Auth e tarefas em **localStorage** (FakeAuthRepository, TasksRepositoryLocalStorage); preferências em localStorage (Zustand persist).
 - Tema e acessibilidade aplicados via `PreferencesEffects` (variáveis CSS e `data-*` no `:root`)
+- **Acessibilidade**: link “Pular para o conteúdo”, landmarks (banner, main, navigation), aria-labels em ações e regiões; **prefers-reduced-motion** respeitado (animações desligadas quando o sistema pede); foco visível ao navegar por teclado (`:focus-visible`).
 
 ---
 

@@ -7,16 +7,16 @@
   --me-anim-duration: 180ms;
 
   /* Valores iniciais; cores reais vêm de src/view/theme/palette.ts via PreferencesEffects */
-  --me-bg: #0F1115;
-  --me-surface: #171A21;
-  --me-surface-secondary: #1D2230;
+  --me-bg: #0f1115;
+  --me-surface: #171a21;
+  --me-surface-secondary: #1d2230;
   --me-border: rgba(255, 255, 255, 0.08);
-  --me-text: #F5F7FA;
-  --me-muted: #AAB2BF;
-  --me-accent: #4C9AFF;
-  --me-accent-hover: #6AAEFF;
-  --me-success: #4CAF50;
-  --me-warning: #F59E0B;
+  --me-text: #f5f7fa;
+  --me-muted: #aab2bf;
+  --me-accent: #4c9aff;
+  --me-accent-hover: #6aaeff;
+  --me-success: #4caf50;
+  --me-warning: #f59e0b;
 
   font-size: var(--me-font-size);
 }
@@ -32,6 +32,18 @@
   --me-anim-duration: 180ms;
 }
 
+/* prefers-reduced-motion: respeita preferência do sistema (acessibilidade) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --me-anim-duration: 0ms !important;
+  }
+  .me-anim,
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
 /* Contrast/complexity: variáveis aplicadas por PreferencesEffects a partir de theme/palette.ts */
 
 body {
@@ -40,17 +52,52 @@ body {
   color: var(--me-text);
 }
 
+/* Skip link: visível apenas ao receber foco (teclado) */
+.me-skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0.5rem;
+  z-index: 9999;
+  padding: 0.75rem 1rem;
+  background: var(--me-accent);
+  color: var(--me-bg);
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.me-skip-link:focus {
+  left: 0.5rem;
+  outline: 3px solid var(--me-focus-outline);
+  outline-offset: 2px;
+}
+
 /* Sem gradiente vermelho — fundo uniforme e calmo */
 body {
   background: var(--me-bg);
 }
 
 /* Utility */
-.me-muted { color: var(--me-muted); }
+.me-muted {
+  color: var(--me-muted);
+}
+
+/* Foco visível para navegação por teclado (acessibilidade) */
+:focus {
+  outline: 2px solid var(--me-accent);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--me-accent);
+  outline-offset: 2px;
+}
 
 /* Generic animation hook */
 .me-anim {
-  transition: transform var(--me-anim-duration) ease,
+  transition:
+    transform var(--me-anim-duration) ease,
     opacity var(--me-anim-duration) ease,
     box-shadow var(--me-anim-duration) ease,
     background var(--me-anim-duration) ease;

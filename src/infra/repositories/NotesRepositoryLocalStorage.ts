@@ -78,7 +78,9 @@ function load(): NotesStorage {
   try {
     const parsed = JSON.parse(raw) as Partial<NotesStorage>
     return {
-      folders: Array.isArray(parsed.folders) ? parsed.folders.map((item) => normalizeFolder(item as Record<string, any>)) : [],
+      folders: Array.isArray(parsed.folders)
+        ? parsed.folders.map((item) => normalizeFolder(item as Record<string, any>))
+        : [],
       documents: Array.isArray(parsed.documents)
         ? parsed.documents.map((item) => normalizeDocument(item as Record<string, any>))
         : [],
@@ -134,7 +136,9 @@ export class NotesRepositoryLocalStorage implements NotesRepository {
     return load().documents.sort((a, b) => b.updatedAtISO.localeCompare(a.updatedAtISO))
   }
 
-  async createDocument(input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>): Promise<NoteDocument> {
+  async createDocument(
+    input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>
+  ): Promise<NoteDocument> {
     const data = load()
     const now = nowISO()
     const document: NoteDocument = {

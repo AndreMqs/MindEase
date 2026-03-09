@@ -37,6 +37,10 @@ export function LoginPage() {
 
   return (
     <Box
+      component="main"
+      role="main"
+      id="main-content"
+      aria-label="Página de entrada"
       sx={{
         minHeight: '100vh',
         display: 'flex',
@@ -47,14 +51,14 @@ export function LoginPage() {
       }}
     >
       <Card className="me-card me-anim" sx={{ maxWidth: 400, width: '100%', p: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 800, mb: 1 }}>
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 800, mb: 1 }}>
           Entrar
         </Typography>
         <Typography className="me-muted" sx={{ mb: 2, fontSize: 14 }}>
           Use seu e-mail e senha para acessar.
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} aria-label="Formulário de login">
           <Stack spacing={2}>
             <TextField
               label="E-mail"
@@ -79,17 +83,42 @@ export function LoginPage() {
                 {error}
               </Typography>
             )}
-            <Button type="submit" variant="contained" fullWidth disabled={isLoading} sx={{ mt: 1 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={isLoading}
+              sx={{ mt: 1 }}
+              aria-label={isLoading ? 'Entrando na conta' : 'Entrar na conta'}
+            >
               {isLoading ? 'Entrando…' : 'Entrar'}
             </Button>
           </Stack>
         </form>
 
-        <Stack direction="row" justifyContent="space-between" sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}>
-          <MuiLink component={Link} to="/esqueci-senha" underline="hover" sx={{ fontSize: 14, color: 'var(--me-accent)' }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}
+          role="navigation"
+          aria-label="Links de acesso"
+        >
+          <MuiLink
+            component={Link}
+            to="/esqueci-senha"
+            underline="hover"
+            sx={{ fontSize: 14, color: 'var(--me-accent)' }}
+            aria-label="Recuperar senha"
+          >
             Esqueci minha senha
           </MuiLink>
-          <MuiLink component={Link} to="/cadastro" underline="hover" sx={{ fontSize: 14, color: 'var(--me-accent)' }}>
+          <MuiLink
+            component={Link}
+            to="/cadastro"
+            underline="hover"
+            sx={{ fontSize: 14, color: 'var(--me-accent)' }}
+            aria-label="Criar nova conta"
+          >
             Criar conta
           </MuiLink>
         </Stack>

@@ -109,7 +109,9 @@ function TaskCard({
   animationsEnabled?: boolean
   onStartFocus?: (taskId: string) => void
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+  })
   const style = {
     transform: CSS.Transform.toString(transform),
     transition: animationsEnabled ? transition : 'none',
@@ -123,7 +125,9 @@ function TaskCard({
   const allChecklistDone = checklistTotal > 0 && checklistDone === checklistTotal
 
   const handleToggleCheck = (itemId: string, checked: boolean) => {
-    const nextChecklist = (task.checklist ?? []).map((c) => (c.id === itemId ? { ...c, done: checked } : c))
+    const nextChecklist = (task.checklist ?? []).map((c) =>
+      c.id === itemId ? { ...c, done: checked } : c
+    )
     onUpdate({ ...task, checklist: nextChecklist, updatedAtISO: new Date().toISOString() })
   }
 
@@ -176,12 +180,25 @@ function TaskCard({
         <Stack spacing={0.6} sx={{ flex: 1, minWidth: 0 }}>
           <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap' }}>
             <Typography sx={{ fontWeight: 800, lineHeight: 1.2 }}>{task.title}</Typography>
-            <Chip className="me-complexity-simple-hide" size="small" label={`${task.points ?? 0} pts`} variant="outlined" />
+            <Chip
+              className="me-complexity-simple-hide"
+              size="small"
+              label={`${task.points ?? 0} pts`}
+              variant="outlined"
+            />
             {task.focusTimerStartedAt != null && (
-              <Chip size="small" icon={<TimerIcon sx={{ fontSize: 14 }} />} label={`⏱ ${formatFocusTime(focusElapsed)}`} variant="outlined" />
+              <Chip
+                size="small"
+                icon={<TimerIcon sx={{ fontSize: 14 }} />}
+                label={`⏱ ${formatFocusTime(focusElapsed)}`}
+                variant="outlined"
+              />
             )}
             {complexity === 'detailed' && task.completedAtISO && (
-              <Chip size="small" label={`Concluída: ${new Date(task.completedAtISO).toLocaleDateString()}`} />
+              <Chip
+                size="small"
+                label={`Concluída: ${new Date(task.completedAtISO).toLocaleDateString()}`}
+              />
             )}
           </Stack>
 
@@ -208,7 +225,13 @@ function TaskCard({
                     onChange={(_, checked) => handleToggleCheck(item.id, checked)}
                     sx={{ py: 0, px: 0.5 }}
                   />
-                  <Typography sx={{ fontSize: 13, textDecoration: item.done ? 'line-through' : 'none', color: item.done ? 'text.secondary' : 'text.primary' }}>
+                  <Typography
+                    sx={{
+                      fontSize: 13,
+                      textDecoration: item.done ? 'line-through' : 'none',
+                      color: item.done ? 'text.secondary' : 'text.primary',
+                    }}
+                  >
                     {item.label}
                   </Typography>
                 </Stack>
@@ -218,7 +241,9 @@ function TaskCard({
 
           {allChecklistDone && task.status !== 'done' ? (
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 0.5 }}>
-              <Typography sx={{ fontSize: 13, color: 'success.main' }}>✔ {checklistDone}/{checklistTotal} etapas concluídas</Typography>
+              <Typography sx={{ fontSize: 13, color: 'success.main' }}>
+                ✔ {checklistDone}/{checklistTotal} etapas concluídas
+              </Typography>
               <Button size="small" variant="outlined" onClick={() => onMove(task.id, 'done')}>
                 Mover para Feito
               </Button>
@@ -233,20 +258,29 @@ function TaskCard({
                 startIcon={<TimerIcon />}
                 onClick={handleFocusToggle}
               >
-                {focusRunning ? 'Em foco' : task.focusTimerStartedAt != null ? 'Retomar' : 'Iniciar foco'}
+                {focusRunning
+                  ? 'Em foco'
+                  : task.focusTimerStartedAt != null
+                    ? 'Retomar'
+                    : 'Iniciar foco'}
               </Button>
             </Stack>
           ) : null}
 
           {task.description ? (
-            <Typography className="me-task-description" color="text.secondary" sx={{ fontSize: 13, lineHeight: 1.35 }}>
+            <Typography
+              className="me-task-description"
+              color="text.secondary"
+              sx={{ fontSize: 13, lineHeight: 1.35 }}
+            >
               {task.description}
             </Typography>
           ) : null}
 
           {complexity === 'detailed' ? (
             <Typography color="text.secondary" sx={{ fontSize: 12 }}>
-              {task.points ?? 0} pts • criada {formatRelativeDate(task.createdAtISO)} • atualizada {formatRelativeDate(task.updatedAtISO)}
+              {task.points ?? 0} pts • criada {formatRelativeDate(task.createdAtISO)} • atualizada{' '}
+              {formatRelativeDate(task.updatedAtISO)}
             </Typography>
           ) : null}
         </Stack>
@@ -310,7 +344,11 @@ function Column({
             <Typography variant="h6" sx={{ fontWeight: 900 }}>
               {title}
             </Typography>
-            <Typography className="me-focus-hide me-complexity-simple-hide" color="text.secondary" sx={{ fontSize: 13 }}>
+            <Typography
+              className="me-focus-hide me-complexity-simple-hide"
+              color="text.secondary"
+              sx={{ fontSize: 13 }}
+            >
               {tasks.length} item(ns)
             </Typography>
           </Stack>
@@ -379,15 +417,27 @@ export function TasksPage() {
   const [alert45TaskTitle, setAlert45TaskTitle] = useState('')
   const [cognitiveTick, setCognitiveTick] = useState(0)
   const [timerTick, setTimerTick] = useState(0)
-  const cognitiveShownRef = useRef<{ taskId: string; shown15: boolean; shown30: boolean; shown45: boolean }>({ taskId: '', shown15: false, shown30: false, shown45: false })
+  const cognitiveShownRef = useRef<{
+    taskId: string
+    shown15: boolean
+    shown30: boolean
+    shown45: boolean
+  }>({ taskId: '', shown15: false, shown30: false, shown45: false })
   const pomodoro25ShownRef = useRef<Set<string>>(new Set())
 
   const [transitionDialogOpen, setTransitionDialogOpen] = useState(false)
-  const [transitionPayload, setTransitionPayload] = useState<{ fromTaskId: string; toTaskId: string; fromTitle: string } | null>(null)
+  const [transitionPayload, setTransitionPayload] = useState<{
+    fromTaskId: string
+    toTaskId: string
+    fromTitle: string
+  } | null>(null)
   const [cognitiveLimitSnackOpen, setCognitiveLimitSnackOpen] = useState(false)
   const [doneDialogOpen, setDoneDialogOpen] = useState(false)
   const [doneDialogTaskId, setDoneDialogTaskId] = useState<string | null>(null)
-  const [nextTaskSuggestion, setNextTaskSuggestion] = useState<{ taskId: string; title: string } | null>(null)
+  const [nextTaskSuggestion, setNextTaskSuggestion] = useState<{
+    taskId: string
+    title: string
+  } | null>(null)
 
   useEffect(() => {
     void init()
@@ -407,23 +457,45 @@ export function TasksPage() {
   }, [local, query])
 
   const grouped = useMemo(() => {
-    const todo = sortTasks(filtered.filter((t) => t.status === 'todo'), sortKey)
-    const doing = sortTasks(filtered.filter((t) => t.status === 'doing'), sortKey)
-    const done = sortTasks(filtered.filter((t) => t.status === 'done'), sortKey)
+    const todo = sortTasks(
+      filtered.filter((t) => t.status === 'todo'),
+      sortKey
+    )
+    const doing = sortTasks(
+      filtered.filter((t) => t.status === 'doing'),
+      sortKey
+    )
+    const done = sortTasks(
+      filtered.filter((t) => t.status === 'done'),
+      sortKey
+    )
     return { todo, doing, done }
   }, [filtered, sortKey])
 
   // 8️⃣ Alertas cognitivos: 15 min toast, 30 min toast, 45 min modal (usa grouped, por isso depois do useMemo)
   useEffect(() => {
     if (!prefs.cognitiveAlertsEnabled || grouped.doing.length === 0) return
-    const taskInDoing = grouped.doing.reduce((oldest, t) =>
-      (oldest ? new Date(t.updatedAtISO).getTime() < new Date(oldest.updatedAtISO).getTime() : true) ? t : oldest,
-    null as Task | null)
+    const taskInDoing = grouped.doing.reduce(
+      (oldest, t) =>
+        (
+          oldest
+            ? new Date(t.updatedAtISO).getTime() < new Date(oldest.updatedAtISO).getTime()
+            : true
+        )
+          ? t
+          : oldest,
+      null as Task | null
+    )
     if (!taskInDoing) return
     const minutes = (Date.now() - new Date(taskInDoing.updatedAtISO).getTime()) / 60000
     const { taskId } = cognitiveShownRef.current
     if (taskId !== taskInDoing.id) {
-      cognitiveShownRef.current = { taskId: taskInDoing.id, shown15: false, shown30: false, shown45: false }
+      cognitiveShownRef.current = {
+        taskId: taskInDoing.id,
+        shown15: false,
+        shown30: false,
+        shown45: false,
+      }
     }
     const cur = cognitiveShownRef.current
     if (minutes >= 45 && !cur.shown45) {
@@ -432,11 +504,15 @@ export function TasksPage() {
       setAlert45Open(true)
     } else if (minutes >= 30 && !cur.shown30) {
       cur.shown30 = true
-      setSnackMessage(`🧠 Você está nesta tarefa há 30 minutos. Talvez seja uma boa hora para uma pausa.`)
+      setSnackMessage(
+        `🧠 Você está nesta tarefa há 30 minutos. Talvez seja uma boa hora para uma pausa.`
+      )
       setSnackOpen(true)
     } else if (minutes >= 15 && !cur.shown15) {
       cur.shown15 = true
-      setSnackMessage(`🧠 Você está nesta tarefa há 15 minutos. Que tal revisar ou fazer uma pausa?`)
+      setSnackMessage(
+        `🧠 Você está nesta tarefa há 15 minutos. Que tal revisar ou fazer uma pausa?`
+      )
       setSnackOpen(true)
     }
   }, [prefs.cognitiveAlertsEnabled, grouped.doing, cognitiveTick])
@@ -462,7 +538,9 @@ export function TasksPage() {
       const elapsed = getFocusElapsed(task)
       if (elapsed >= pomodoroMinutes * 60 && !pomodoro25ShownRef.current.has(task.id)) {
         pomodoro25ShownRef.current.add(task.id)
-        setSnackMessage(`⏱ Pausa sugerida: você está há ${pomodoroMinutes} min em foco. Que tal uma pausa?`)
+        setSnackMessage(
+          `⏱ Pausa sugerida: você está há ${pomodoroMinutes} min em foco. Que tal uma pausa?`
+        )
         setSnackOpen(true)
       }
     })
@@ -481,9 +559,22 @@ export function TasksPage() {
       setTransitionDialogOpen(true)
       return
     }
-    const others = local.filter((t) => t.id !== taskId && (t.focusTimerStartedAt != null))
-    others.forEach((t) => void update({ ...t, focusTimerStartedAt: undefined, focusTimerPausedAt: undefined, updatedAtISO: new Date().toISOString() }))
-    void update({ ...task, focusTimerStartedAt: Date.now(), focusTimerPausedAt: undefined, updatedAtISO: new Date().toISOString() })
+    const others = local.filter((t) => t.id !== taskId && t.focusTimerStartedAt != null)
+    others.forEach(
+      (t) =>
+        void update({
+          ...t,
+          focusTimerStartedAt: undefined,
+          focusTimerPausedAt: undefined,
+          updatedAtISO: new Date().toISOString(),
+        })
+    )
+    void update({
+      ...task,
+      focusTimerStartedAt: Date.now(),
+      focusTimerPausedAt: undefined,
+      updatedAtISO: new Date().toISOString(),
+    })
   }
 
   const handleTransitionTrocar = () => {
@@ -491,8 +582,20 @@ export function TasksPage() {
     const { fromTaskId, toTaskId } = transitionPayload
     const fromTask = local.find((t) => t.id === fromTaskId)
     const toTask = local.find((t) => t.id === toTaskId)
-    if (fromTask) void update({ ...fromTask, focusTimerStartedAt: undefined, focusTimerPausedAt: undefined, updatedAtISO: new Date().toISOString() })
-    if (toTask) void update({ ...toTask, focusTimerStartedAt: Date.now(), focusTimerPausedAt: undefined, updatedAtISO: new Date().toISOString() })
+    if (fromTask)
+      void update({
+        ...fromTask,
+        focusTimerStartedAt: undefined,
+        focusTimerPausedAt: undefined,
+        updatedAtISO: new Date().toISOString(),
+      })
+    if (toTask)
+      void update({
+        ...toTask,
+        focusTimerStartedAt: Date.now(),
+        focusTimerPausedAt: undefined,
+        updatedAtISO: new Date().toISOString(),
+      })
     setTransitionDialogOpen(false)
     setTransitionPayload(null)
   }
@@ -521,7 +624,9 @@ export function TasksPage() {
 
   const handleSaveEdit = () => {
     if (!editTask) return
-    const checklist = editChecklist.filter((it) => it.label.trim()).map((it) => ({ ...it, label: it.label.trim() }))
+    const checklist = editChecklist
+      .filter((it) => it.label.trim())
+      .map((it) => ({ ...it, label: it.label.trim() }))
     void update({
       ...editTask,
       title: editTitle.trim(),
@@ -606,8 +711,12 @@ export function TasksPage() {
       const overContainer = findContainer(prev, over)
       if (!activeContainer || !overContainer) return prev
 
-      const activeItems = prev.filter((t) => t.status === activeContainer).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      const overItems = prev.filter((t) => t.status === overContainer).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      const activeItems = prev
+        .filter((t) => t.status === activeContainer)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      const overItems = prev
+        .filter((t) => t.status === overContainer)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
       const activeIndex = activeItems.findIndex((t) => t.id === active)
       const overIndexRaw = overItems.findIndex((t) => t.id === over)
@@ -625,12 +734,17 @@ export function TasksPage() {
 
       // cross column: remove from active, insert into over
       const movingTask = activeItems[activeIndex]
-      const nextActive = activeItems.filter((t) => t.id !== active).map((t, i) => ({ ...t, order: i }))
+      const nextActive = activeItems
+        .filter((t) => t.id !== active)
+        .map((t, i) => ({ ...t, order: i }))
       const movingUpdated: Task = {
         ...movingTask,
         status: overContainer,
         updatedAtISO: new Date().toISOString(),
-        completedAtISO: overContainer === 'done' ? (movingTask.completedAtISO ?? new Date().toISOString()) : undefined,
+        completedAtISO:
+          overContainer === 'done'
+            ? (movingTask.completedAtISO ?? new Date().toISOString())
+            : undefined,
         pointsAwarded: overContainer === 'done' ? movingTask.pointsAwarded : false,
       }
       const nextOver = [
@@ -650,12 +764,22 @@ export function TasksPage() {
   const activeTask = activeId ? local.find((t) => t.id === activeId) : undefined
 
   return (
-    <Stack spacing={2}>
+    <Stack
+      spacing={2}
+      component="section"
+      role="region"
+      aria-label="Tarefas: quadro Kanban (A Fazer, Fazendo, Feito)"
+    >
       <Card className="me-card me-anim" sx={{ p: 2 }}>
         <Stack spacing={2}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} alignItems={{ md: 'center' }} justifyContent="space-between">
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={1.5}
+            alignItems={{ md: 'center' }}
+            justifyContent="space-between"
+          >
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 900 }}>
+              <Typography variant="h5" component="h2" sx={{ fontWeight: 900 }}>
                 Kanban
               </Typography>
               <Typography color="text.secondary" sx={{ mt: 0.4 }}>
@@ -663,7 +787,12 @@ export function TasksPage() {
               </Typography>
             </Box>
 
-            <Stack className="me-focus-hide" direction={{ xs: 'column', sm: 'row' }} spacing={1.2} alignItems={{ sm: 'center' }}>
+            <Stack
+              className="me-focus-hide"
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1.2}
+              alignItems={{ sm: 'center' }}
+            >
               <TextField
                 label="Buscar"
                 value={query}
@@ -690,8 +819,12 @@ export function TasksPage() {
 
           {prefs.navigationProfile === 'assisted' ? (
             <Alert severity="info" icon={false}>
-              <Typography component="span" sx={{ fontWeight: 600 }}>💡 Dica</Typography>
-              <Typography component="span" sx={{ ml: 0.5 }}>Você pode arrastar tarefas entre colunas.</Typography>
+              <Typography component="span" sx={{ fontWeight: 600 }}>
+                💡 Dica
+              </Typography>
+              <Typography component="span" sx={{ ml: 0.5 }}>
+                Você pode arrastar tarefas entre colunas.
+              </Typography>
             </Alert>
           ) : null}
 
@@ -699,18 +832,30 @@ export function TasksPage() {
 
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
-              <TextField label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Estudar aula 3" />
+              <TextField
+                label="Título"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex: Estudar aula 3"
+              />
             </Grid>
             <Grid item xs={12} md={5}>
               <TextField
                 label="Descrição"
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
-                placeholder={prefs.complexity === 'simple' ? 'Opcional' : 'Ex: fazer resumo e exercícios'}
+                placeholder={
+                  prefs.complexity === 'simple' ? 'Opcional' : 'Ex: fazer resumo e exercícios'
+                }
               />
             </Grid>
             <Grid item xs={12} md={2}>
-              <TextField label="Pontos" value={points} onChange={(e) => setPoints(e.target.value.replace(/[^0-9]/g, ''))} inputMode="numeric" />
+              <TextField
+                label="Pontos"
+                value={points}
+                onChange={(e) => setPoints(e.target.value.replace(/[^0-9]/g, ''))}
+                inputMode="numeric"
+              />
             </Grid>
             <Grid item xs={12} md={1}>
               <Button
@@ -718,8 +863,15 @@ export function TasksPage() {
                 startIcon={<AddIcon />}
                 disabled={!canAdd || loading}
                 onClick={() => {
-                  const checklist = newChecklistLabels.filter((l) => l.trim()).map((label) => ({ label: label.trim() }))
-                  void add(title, desc, Number(points), checklist.length > 0 ? checklist : undefined)
+                  const checklist = newChecklistLabels
+                    .filter((l) => l.trim())
+                    .map((label) => ({ label: label.trim() }))
+                  void add(
+                    title,
+                    desc,
+                    Number(points),
+                    checklist.length > 0 ? checklist : undefined
+                  )
                   setTitle('')
                   setDesc('')
                   setPoints('10')
@@ -731,23 +883,46 @@ export function TasksPage() {
               </Button>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>Checklist (opcional)</Typography>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                Checklist (opcional)
+              </Typography>
               <Stack direction="row" flexWrap="wrap" alignItems="center" gap={1}>
                 {newChecklistLabels.map((label, i) => (
-                  <Stack key={i} direction="row" alignItems="center" spacing={0.5} sx={{ minWidth: 200 }}>
+                  <Stack
+                    key={i}
+                    direction="row"
+                    alignItems="center"
+                    spacing={0.5}
+                    sx={{ minWidth: 200 }}
+                  >
                     <TextField
                       size="small"
                       placeholder="Item do checklist"
                       value={label}
-                      onChange={(e) => setNewChecklistLabels((prev) => prev.map((l, j) => (j === i ? e.target.value : l)))}
+                      onChange={(e) =>
+                        setNewChecklistLabels((prev) =>
+                          prev.map((l, j) => (j === i ? e.target.value : l))
+                        )
+                      }
                       sx={{ width: 220 }}
                     />
-                    <IconButton size="small" onClick={() => setNewChecklistLabels((prev) => prev.filter((_, j) => j !== i))} aria-label="Remover item">
+                    <IconButton
+                      size="small"
+                      onClick={() =>
+                        setNewChecklistLabels((prev) => prev.filter((_, j) => j !== i))
+                      }
+                      aria-label="Remover item"
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Stack>
                 ))}
-                <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={() => setNewChecklistLabels((prev) => [...prev, ''])}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<AddIcon />}
+                  onClick={() => setNewChecklistLabels((prev) => [...prev, ''])}
+                >
                   Adicionar item
                 </Button>
               </Stack>
@@ -767,20 +942,60 @@ export function TasksPage() {
       >
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
-            <Column title="A fazer" status="todo" tasks={grouped.todo} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onEdit={handleOpenEdit} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column
+              title="A fazer"
+              status="todo"
+              tasks={grouped.todo}
+              complexity={prefs.complexity}
+              onRemove={(id) => void remove(id)}
+              onUpdate={(t) => void update(t)}
+              onMove={handleMoveOrShowDoneDialog}
+              onEdit={handleOpenEdit}
+              onStartFocus={handleStartFocus}
+              animationsEnabled={prefs.animationsEnabled}
+            />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Column title="Fazendo" status="doing" tasks={grouped.doing} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onEdit={handleOpenEdit} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column
+              title="Fazendo"
+              status="doing"
+              tasks={grouped.doing}
+              complexity={prefs.complexity}
+              onRemove={(id) => void remove(id)}
+              onUpdate={(t) => void update(t)}
+              onMove={handleMoveOrShowDoneDialog}
+              onEdit={handleOpenEdit}
+              onStartFocus={handleStartFocus}
+              animationsEnabled={prefs.animationsEnabled}
+            />
           </Grid>
           <Grid item xs={12} md={4}>
-            <Column title="Feito" status="done" tasks={grouped.done} complexity={prefs.complexity} onRemove={(id) => void remove(id)} onUpdate={(t) => void update(t)} onMove={handleMoveOrShowDoneDialog} onEdit={handleOpenEdit} onStartFocus={handleStartFocus} animationsEnabled={prefs.animationsEnabled} />
+            <Column
+              title="Feito"
+              status="done"
+              tasks={grouped.done}
+              complexity={prefs.complexity}
+              onRemove={(id) => void remove(id)}
+              onUpdate={(t) => void update(t)}
+              onMove={handleMoveOrShowDoneDialog}
+              onEdit={handleOpenEdit}
+              onStartFocus={handleStartFocus}
+              animationsEnabled={prefs.animationsEnabled}
+            />
           </Grid>
         </Grid>
 
         <DragOverlay>
           {activeTask ? (
             <Box sx={{ width: 360, pointerEvents: 'none' }}>
-              <TaskCard task={activeTask} complexity={prefs.complexity} onRemove={() => {}} onUpdate={() => {}} onMove={() => {}} animationsEnabled={prefs.animationsEnabled} />
+              <TaskCard
+                task={activeTask}
+                complexity={prefs.complexity}
+                onRemove={() => {}}
+                onUpdate={() => {}}
+                onMove={() => {}}
+                animationsEnabled={prefs.animationsEnabled}
+              />
             </Box>
           ) : null}
         </DragOverlay>
@@ -829,7 +1044,9 @@ export function TasksPage() {
               multiline
               minRows={2}
             />
-            <Typography variant="subtitle2" color="text.secondary">Checklist</Typography>
+            <Typography variant="subtitle2" color="text.secondary">
+              Checklist
+            </Typography>
             <Stack spacing={1}>
               {editChecklist.map((item, i) => (
                 <Stack key={item.id} direction="row" alignItems="center" spacing={0.5}>
@@ -838,14 +1055,32 @@ export function TasksPage() {
                     fullWidth
                     placeholder="Item"
                     value={item.label}
-                    onChange={(e) => setEditChecklist((prev) => prev.map((it, j) => (j === i ? { ...it, label: e.target.value } : it)))}
+                    onChange={(e) =>
+                      setEditChecklist((prev) =>
+                        prev.map((it, j) => (j === i ? { ...it, label: e.target.value } : it))
+                      )
+                    }
                   />
-                  <IconButton size="small" onClick={() => setEditChecklist((prev) => prev.filter((_, j) => j !== i))} aria-label="Remover">
+                  <IconButton
+                    size="small"
+                    onClick={() => setEditChecklist((prev) => prev.filter((_, j) => j !== i))}
+                    aria-label="Remover"
+                  >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Stack>
               ))}
-              <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={() => setEditChecklist((prev) => [...prev, { id: `c_edit_${Date.now()}_${prev.length}`, label: '', done: false }])}>
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={() =>
+                  setEditChecklist((prev) => [
+                    ...prev,
+                    { id: `c_edit_${Date.now()}_${prev.length}`, label: '', done: false },
+                  ])
+                }
+              >
                 Adicionar item
               </Button>
             </Stack>
@@ -853,20 +1088,30 @@ export function TasksPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEdit}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSaveEdit}>Salvar</Button>
+          <Button variant="contained" onClick={handleSaveEdit}>
+            Salvar
+          </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={transitionDialogOpen} onClose={handleTransitionContinuar} maxWidth="xs" fullWidth>
+      <Dialog
+        open={transitionDialogOpen}
+        onClose={handleTransitionContinuar}
+        maxWidth="xs"
+        fullWidth
+      >
         <DialogTitle>Mudança de atividade</DialogTitle>
         <DialogContent>
           <Typography>
-            Você está mudando de atividade. Deseja finalizar a tarefa atual (&quot;{transitionPayload?.fromTitle ?? ''}&quot;) e iniciar foco na nova?
+            Você está mudando de atividade. Deseja finalizar a tarefa atual (&quot;
+            {transitionPayload?.fromTitle ?? ''}&quot;) e iniciar foco na nova?
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleTransitionContinuar}>Continuar na atual</Button>
-          <Button variant="contained" onClick={handleTransitionTrocar}>Trocar</Button>
+          <Button variant="contained" onClick={handleTransitionTrocar}>
+            Trocar
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -885,7 +1130,9 @@ export function TasksPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDoneDialogDepois}>Depois</Button>
-          <Button variant="contained" onClick={handleDoneDialogSim}>Sim</Button>
+          <Button variant="contained" onClick={handleDoneDialogSim}>
+            Sim
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -897,7 +1144,14 @@ export function TasksPage() {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         action={
           nextTaskSuggestion ? (
-            <Button size="small" color="primary" onClick={() => { handleStartFocus(nextTaskSuggestion.taskId); setNextTaskSuggestion(null); }}>
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => {
+                handleStartFocus(nextTaskSuggestion.taskId)
+                setNextTaskSuggestion(null)
+              }}
+            >
               Iniciar foco
             </Button>
           ) : null

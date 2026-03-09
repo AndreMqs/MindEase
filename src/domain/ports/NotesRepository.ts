@@ -7,7 +7,9 @@ export interface NotesRepository {
   removeFolder(id: string): Promise<void>
 
   listDocuments(): Promise<NoteDocument[]>
-  createDocument(input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>): Promise<NoteDocument>
+  createDocument(
+    input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>
+  ): Promise<NoteDocument>
   updateDocument(document: NoteDocument): Promise<NoteDocument>
   removeDocument(id: string): Promise<void>
 }

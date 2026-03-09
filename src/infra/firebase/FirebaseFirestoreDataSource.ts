@@ -66,6 +66,6 @@ export class FirebaseFirestoreDataSource implements IDatabaseDataSource {
           ? query(colRef, firestoreLimit(options.limit))
           : colRef
     const snapshot = await getDocs(q)
-    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as T))
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as T)
   }
 }

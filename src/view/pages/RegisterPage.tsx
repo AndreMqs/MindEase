@@ -119,7 +119,14 @@ export function RegisterPage() {
               label={
                 <Typography sx={{ fontSize: 14 }}>
                   Li e aceito os{' '}
-                  <MuiLink component={Link} to="/termos-de-uso" target="_blank" rel="noopener" underline="hover" sx={{ color: 'var(--me-accent)' }}>
+                  <MuiLink
+                    component={Link}
+                    to="/termos-de-uso"
+                    target="_blank"
+                    rel="noopener"
+                    underline="hover"
+                    sx={{ color: 'var(--me-accent)' }}
+                  >
                     Termos de Uso
                   </MuiLink>
                 </Typography>
@@ -137,7 +144,12 @@ export function RegisterPage() {
         </form>
 
         <Typography sx={{ mt: 2, textAlign: 'center' }}>
-          <MuiLink component={Link} to="/login" underline="hover" sx={{ fontSize: 14, color: 'var(--me-accent)' }}>
+          <MuiLink
+            component={Link}
+            to="/login"
+            underline="hover"
+            sx={{ fontSize: 14, color: 'var(--me-accent)' }}
+          >
             Já tenho conta — Entrar
           </MuiLink>
         </Typography>

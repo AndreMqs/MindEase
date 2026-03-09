@@ -1,6 +1,4 @@
-
 export const palette = {
-
   bgMain: '#0F1115',
   surface: '#171A21',
   surfaceSecondary: '#1D2230',
@@ -32,8 +30,18 @@ type PrefsForPalette = { contrast: string; complexity: string }
 export function getCssVars(prefs: PrefsForPalette): Record<string, string> {
   const isVeryHigh = prefs.contrast === 'veryHigh'
   const isHigh = prefs.contrast === 'high' || isVeryHigh
-  const border = isVeryHigh ? 'rgba(255,255,255,0.25)' : isHigh ? palette.borderHighContrast : (prefs.complexity === 'detailed' ? palette.borderDetailed : palette.border)
-  const muted = isVeryHigh ? '#FFFFFF' : isHigh ? palette.textSecondaryHighContrast : palette.textSecondary
+  const border = isVeryHigh
+    ? 'rgba(255,255,255,0.25)'
+    : isHigh
+      ? palette.borderHighContrast
+      : prefs.complexity === 'detailed'
+        ? palette.borderDetailed
+        : palette.border
+  const muted = isVeryHigh
+    ? '#FFFFFF'
+    : isHigh
+      ? palette.textSecondaryHighContrast
+      : palette.textSecondary
 
   return {
     '--me-bg': isVeryHigh ? '#000000' : palette.bgMain,

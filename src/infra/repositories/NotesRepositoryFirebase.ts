@@ -5,7 +5,7 @@ import { FirestoreNotesRepositoryImpl } from './FirestoreNotesRepositoryImpl'
 export class NotesRepositoryFirebase implements NotesRepository {
   constructor(
     private readonly getCurrentUserId: () => string | null,
-    private readonly impl: FirestoreNotesRepositoryImpl,
+    private readonly impl: FirestoreNotesRepositoryImpl
   ) {}
 
   private requireUserId() {
@@ -34,7 +34,9 @@ export class NotesRepositoryFirebase implements NotesRepository {
     return this.impl.listDocuments(this.requireUserId())
   }
 
-  createDocument(input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>): Promise<NoteDocument> {
+  createDocument(
+    input: Omit<NoteDocument, 'id' | 'createdAtISO' | 'updatedAtISO'>
+  ): Promise<NoteDocument> {
     return this.impl.createDocument(this.requireUserId(), input)
   }
 

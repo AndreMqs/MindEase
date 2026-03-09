@@ -24,20 +24,28 @@ export function TermsPage() {
         </Typography>
         <Stack spacing={1.5} sx={{ mb: 3 }}>
           <Typography sx={{ fontSize: 14 }}>
-            Ao utilizar o MindEase, você concorda com as práticas descritas neste documento. O aplicativo foi desenvolvido para apoiar o bem-estar cognitivo e a organização de tarefas.
+            Ao utilizar o MindEase, você concorda com as práticas descritas neste documento. O
+            aplicativo foi desenvolvido para apoiar o bem-estar cognitivo e a organização de
+            tarefas.
           </Typography>
           <Typography sx={{ fontSize: 14 }}>
-            Seus dados de perfil e preferências são armazenados localmente no seu dispositivo. Em versões futuras, a integração com Firebase permitirá sincronização e backup sob sua conta.
+            Seus dados de perfil e preferências são armazenados localmente no seu dispositivo. Em
+            versões futuras, a integração com Firebase permitirá sincronização e backup sob sua
+            conta.
           </Typography>
           <Typography sx={{ fontSize: 14 }}>
-            Não use o MindEase para fins ilegais ou que violem direitos de terceiros. O uso é por sua conta e risco.
+            Não use o MindEase para fins ilegais ou que violem direitos de terceiros. O uso é por
+            sua conta e risco.
           </Typography>
           <Typography sx={{ fontSize: 14 }}>
-            Estes termos podem ser atualizados. O uso continuado após alterações constitui aceitação das novas condições.
+            Estes termos podem ser atualizados. O uso continuado após alterações constitui aceitação
+            das novas condições.
           </Typography>
         </Stack>
         <MuiLink component={Link} to="/cadastro" underline="hover">
-          <Button variant="outlined" size="small">Voltar ao cadastro</Button>
+          <Button variant="outlined" size="small">
+            Voltar ao cadastro
+          </Button>
         </MuiLink>
       </Card>
     </Box>
