@@ -15,4 +15,21 @@ export type UserDocument = {
   preferences: Record<string, unknown>
   settings: Record<string, unknown>
   metadata: Record<string, unknown>
+  notes?: {
+    folders?: Record<string, unknown>
+    documents?: Record<string, unknown>
+  }
+  gamification?: {
+    pointsBalance?: number
+    pointsTotalEarned?: number
+    completedTaskIds?: Record<string, boolean>
+    rewards?: Array<{ id: string; title: string; cost: number }>
+    redemptionHistory?: Array<{
+      id: string
+      rewardId: string
+      rewardTitle: string
+      cost: number
+      redeemedAtISO: string
+    }>
+  }
 }

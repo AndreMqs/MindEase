@@ -7,6 +7,7 @@ import Paper from '@mui/material/Paper'
 import { Select } from '../components/Select'
 import { Switch } from '../components/Switch'
 import { Card } from '../components/Card'
+import { Button } from '../components/Button/Button'
 import type { ContrastLevel, NavigationProfile, RoutineType, CognitiveCondition } from '../../domain/entities/Preferences'
 import { COGNITIVE_PRESETS, ROUTINE_POMODORO } from '../../domain/entities/Preferences'
 import { usePreferencesVM } from '../viewmodels/preferencesVM'
@@ -62,8 +63,8 @@ export function PanelPage() {
             />
             <Typography color="text.secondary" sx={{ fontSize: 13 }}>
               {preferences.focusMode
-                ? 'Esconde: pontos, gamificação, filtros, ordenação, contadores. Ficam apenas Tarefas e Kanban.'
-                : 'Mostra todos os elementos.'}
+                ? 'Reduz elementos secundários e destaca a área principal. Em Anotações, mostra apenas o editor.'
+                : 'Mostra todos os elementos da interface.'}
             </Typography>
           </Stack>
 
@@ -240,14 +241,16 @@ export function PanelPage() {
           <Stack direction="row" spacing={1} alignItems="center">
             <Paper variant="outlined" sx={{ p: 1.5, display: 'flex', alignItems: 'center' }}>
               <Typography color="text.secondary" sx={{ mr: 1 }}>Restaurar padrões</Typography>
-              <button
-                className="me-link"
+              <Button
+                variant="outlined"
+                size="small"
                 onClick={() => void reset()}
                 disabled={loading}
                 aria-label="Resetar preferências"
+                sx={{ minWidth: 112, borderRadius: 999, fontWeight: 700 }}
               >
                 Restaurar
-              </button>
+              </Button>
             </Paper>
           </Stack>
         </Stack>

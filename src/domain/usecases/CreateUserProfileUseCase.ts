@@ -24,6 +24,17 @@ export class CreateUserProfileUseCase {
       preferences: {},
       settings: {},
       metadata: {},
+      notes: { folders: {}, documents: {} },
+      gamification: {
+        pointsBalance: 0,
+        pointsTotalEarned: 0,
+        completedTaskIds: {},
+        rewards: [
+          { id: 'reward-ep', title: 'Assistir 1 episódio de série', cost: 30 },
+          { id: 'reward-game', title: '30 min de jogo', cost: 50 },
+        ],
+        redemptionHistory: [],
+      },
     }
     await this.databaseRepository.set(USERS_COLLECTION, userId, document)
   }

@@ -17,7 +17,6 @@ type TasksState = {
 
 function normalizeOrders(tasks: Task[]): Task[] {
   const counters: Record<TaskStatus, number> = { todo: 0, doing: 0, done: 0 }
-  // keep stable order per status (by current order)
   const sorted = [...tasks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   return sorted.map((t) => ({ ...t, order: counters[t.status]++ }))
 }
@@ -30,8 +29,9 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
   async init() {
     set({ loading: true, error: undefined })
     try {
-      const items = await container.usecases.listTasks.execute()
-      set({ tasks: normalizeOrders(items), loading: false })
+      const items = normalizeOrders(await container.usecases.listTasks.execute())
+      useShellStore.getState().syncTaskPoints(items)
+      set({ tasks: items, loading: false })
     } catch (e) {
       set({ loading: false, error: (e as Error).message })
     }
@@ -47,6 +47,7 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
         checklist,
       })
       const next = normalizeOrders([created, ...get().tasks])
+      useShellStore.getState().syncTaskPoints(next)
       set({ tasks: next, loading: false })
     } catch (e) {
       set({ loading: false, error: (e as Error).message })
@@ -58,8 +59,9 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
     try {
       await container.usecases.updateTask.execute(task)
       const prev = get().tasks
-      const next = prev.map((t) => (t.id === task.id ? task : t))
-      set({ tasks: normalizeOrders(next), loading: false })
+      const next = normalizeOrders(prev.map((t) => (t.id === task.id ? task : t)))
+      useShellStore.getState().syncTaskPoints(next)
+      set({ tasks: next, loading: false })
     } catch (e) {
       set({ loading: false, error: (e as Error).message })
     }
@@ -69,7 +71,9 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
     set({ loading: true, error: undefined })
     try {
       await container.usecases.removeTask.execute(id)
-      set({ tasks: get().tasks.filter((t) => t.id !== id), loading: false })
+      const next = get().tasks.filter((t) => t.id !== id)
+      useShellStore.getState().syncTaskPoints(next)
+      set({ tasks: next, loading: false })
     } catch (e) {
       set({ loading: false, error: (e as Error).message })
     }
@@ -85,39 +89,47 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
         completedAtISO: status === 'done' ? (t.completedAtISO ?? new Date().toISOString()) : undefined,
         updatedAtISO: new Date().toISOString(),
       }
-      if (status === 'done' && t.focusTimerStartedAt != null && t.focusTimerPausedAt == null)
+      if (status === 'done' && t.focusTimerStartedAt != null && t.focusTimerPausedAt == null) {
         updated.focusTimerPausedAt = Date.now()
+      }
       return updated
     })
     await get().apply(next)
   },
 
   async apply(next) {
-    // Award points ONLY once per task, tracked on the task itself (pointsAwarded flag).
     const prev = get().tasks
     const prevById = new Map(prev.map((t) => [t.id, t]))
-    const award = useShellStore.getState().awardPointsForTask
 
     const nextWithAwards = next.map((t) => {
       let out = t
       const old = prevById.get(t.id)
-      const transitionedToDone = old && old.status !== 'done' && t.status === 'done'
-      const shouldAward = transitionedToDone && !t.pointsAwarded
-      if (shouldAward) {
-        award(t.id, t.points ?? 0)
-        out = { ...out, pointsAwarded: true }
+      const transitionedToDone = Boolean(old && old.status !== 'done' && t.status === 'done')
+      const transitionedOutOfDone = Boolean(old && old.status === 'done' && t.status !== 'done')
+
+      if (transitionedOutOfDone) {
+        out = { ...out, pointsAwarded: false, completedAtISO: undefined }
+      } else if (transitionedToDone) {
+        out = {
+          ...out,
+          pointsAwarded: true,
+          completedAtISO: t.completedAtISO ?? new Date().toISOString(),
+        }
+      } else {
+        out = { ...out, pointsAwarded: out.status === 'done' }
       }
-      if (out.status === 'done' && out.pointsAwarded == null) out = { ...out, pointsAwarded: true }
-      if (out.status === 'done' && out.focusTimerStartedAt != null && out.focusTimerPausedAt == null)
+
+      if (out.status === 'done' && out.focusTimerStartedAt != null && out.focusTimerPausedAt == null) {
         out = { ...out, focusTimerPausedAt: Date.now() }
+      }
+
       return out
     })
 
-    // Normalize & set locally first (optimistic)
     const normalized = normalizeOrders(nextWithAwards)
+    useShellStore.getState().syncTaskPoints(normalized)
     set({ tasks: normalized, loading: false, error: undefined })
 
-    // Persist only changed tasks
     try {
       const changed = normalized.filter((t) => {
         const p = prevById.get(t.id)
@@ -128,7 +140,6 @@ export const useTasksVM = create<TasksState>()((set, get) => ({
         await container.usecases.updateTask.execute(t)
       }
     } catch (e) {
-      // If persistence fails, re-init to recover
       await get().init()
       set({ error: (e as Error).message })
     }

@@ -7,6 +7,8 @@ import { useAuth } from './context/AuthContext'
 const PanelPage = lazy(() => import('./pages/PanelPage').then((m) => ({ default: m.PanelPage })))
 const TasksPage = lazy(() => import('./pages/TasksPage').then((m) => ({ default: m.TasksPage })))
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })))
+const NotesPage = lazy(() => import('./pages/NotesPage').then((m) => ({ default: m.NotesPage })))
+const StorePage = lazy(() => import('./pages/StorePage').then((m) => ({ default: m.StorePage })))
 const LoginPage = lazy(() => import('./pages/LoginPage').then((m) => ({ default: m.LoginPage })))
 const RegisterPage = lazy(() => import('./pages/RegisterPage').then((m) => ({ default: m.RegisterPage })))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })))
@@ -55,6 +57,8 @@ export function AppRouter() {
         >
           <Route path="/panel" element={<PanelPage />} />
           <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/store" element={<StorePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<NotFound />} />
         </Route>

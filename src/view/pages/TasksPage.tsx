@@ -582,7 +582,24 @@ export function TasksPage() {
     const active = String(e.active.id)
     const over = e.over?.id ? String(e.over.id) : undefined
     setActiveId(undefined)
-    if (!over || active === over) return
+
+    const persistPreviewStateIfNeeded = () => {
+      const persistedById = new Map(tasks.map((task) => [task.id, task]))
+      const hasPreviewChanges = local.some((task) => {
+        const persisted = persistedById.get(task.id)
+        if (!persisted) return true
+        return persisted.status !== task.status || (persisted.order ?? 0) !== (task.order ?? 0)
+      })
+
+      if (hasPreviewChanges) {
+        void apply(local)
+      }
+    }
+
+    if (!over || active === over) {
+      persistPreviewStateIfNeeded()
+      return
+    }
 
     setLocal((prev) => {
       const activeContainer = findContainer(prev, active)
@@ -612,7 +629,9 @@ export function TasksPage() {
       const movingUpdated: Task = {
         ...movingTask,
         status: overContainer,
+        updatedAtISO: new Date().toISOString(),
         completedAtISO: overContainer === 'done' ? (movingTask.completedAtISO ?? new Date().toISOString()) : undefined,
+        pointsAwarded: overContainer === 'done' ? movingTask.pointsAwarded : false,
       }
       const nextOver = [
         ...overItems.slice(0, Math.max(0, overIndex)),

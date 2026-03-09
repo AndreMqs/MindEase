@@ -1,7 +1,8 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import type { User } from '../../domain/entities/User'
 import type { UpdateProfileData } from '../../domain/ports/AuthRepository'
 import { container } from '../../shared/container'
+import { useShellStore } from '../../shared/store/useShellStore'
 
 type AuthState = {
   user: User | null
@@ -23,11 +24,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
+  const hasResolvedInitialSession = useRef(false)
 
   const init = useCallback(async () => {
     try {
       const current = await repo.getCurrentUser()
       setUser(current)
+      useShellStore.getState().setActiveUser(current?.id ?? null)
+      if (current?.id) {
+        void useShellStore.getState().hydrateActiveUserGamification()
+      }
     } catch {
       setUser(null)
     } finally {
@@ -36,11 +42,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    const unsubscribe = repo.subscribeAuthState?.(setUser)
-    if (unsubscribe) {
-      init()
+    if (repo.subscribeAuthState) {
+      const unsubscribe = repo.subscribeAuthState((nextUser) => {
+        setUser(nextUser)
+        useShellStore.getState().setActiveUser(nextUser?.id ?? null)
+        if (nextUser?.id) {
+          void useShellStore.getState().hydrateActiveUserGamification()
+        }
+
+        if (!hasResolvedInitialSession.current) {
+          hasResolvedInitialSession.current = true
+          setIsInitialized(true)
+        }
+      })
+
       return () => unsubscribe()
     }
+
     void init()
   }, [init])
 
@@ -49,6 +67,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const u = await repo.login(email, password)
       setUser(u)
+      useShellStore.getState().setActiveUser(u.id)
+      void useShellStore.getState().hydrateActiveUserGamification()
+      hasResolvedInitialSession.current = true
+      setIsInitialized(true)
     } finally {
       setIsLoading(false)
     }
@@ -59,6 +81,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const u = await repo.register(email, password, displayName)
       setUser(u)
+      useShellStore.getState().setActiveUser(u.id)
+      void useShellStore.getState().hydrateActiveUserGamification()
+      hasResolvedInitialSession.current = true
+      setIsInitialized(true)
     } finally {
       setIsLoading(false)
     }
@@ -69,6 +95,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await repo.logout()
       setUser(null)
+      useShellStore.getState().setActiveUser(null)
+      hasResolvedInitialSession.current = true
+      setIsInitialized(true)
     } finally {
       setIsLoading(false)
     }

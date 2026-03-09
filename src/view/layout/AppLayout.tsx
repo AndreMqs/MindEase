@@ -21,6 +21,8 @@ import {
   TaskAltIcon,
   PersonIcon,
   StarIcon,
+  RedeemIcon,
+  NoteIcon,
   VisibilityOffIcon,
   VisibilityIcon,
   SettingsIcon,
@@ -29,6 +31,8 @@ import {
 function routeToTab(pathname: string) {
   if (pathname.startsWith('/panel')) return '/panel'
   if (pathname.startsWith('/tasks')) return '/tasks'
+  if (pathname.startsWith('/notes')) return '/notes'
+  if (pathname.startsWith('/store')) return '/store'
   return '/panel'
 }
 
@@ -47,21 +51,28 @@ export function AppLayout() {
 
   const tab = routeToTab(location.pathname)
   const isProfilePage = location.pathname.startsWith('/profile')
+  const isNotesFocusMode = prefs.focusMode && location.pathname.startsWith('/notes')
 
   const closeConfigMenu = () => setConfigAnchor(null)
 
   return (
     <Box className="me-container">
-      <Paper className={`me-topbar me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''} ${prefs.focusMode ? 'me-focus-outline' : ''}`} elevation={0} sx={{ p: 2.5, backgroundColor: 'var(--me-surface-secondary)' }}>
+      <Paper
+        className={`me-topbar me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''} ${prefs.focusMode ? 'me-focus-outline' : ''}`}
+        elevation={0}
+        sx={{ p: isNotesFocusMode ? 2 : 2.5, backgroundColor: 'var(--me-surface-secondary)' }}
+      >
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ md: 'center' }} justifyContent="space-between">
           {/* Esquerda: marca + navegação principal */}
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: -0.5 }}>
               MindEase
             </Typography>
-            <Typography className="me-muted me-focus-hide" sx={{ mt: 0.2 }}>
-              Painel • Tarefas
-            </Typography>
+            {!isNotesFocusMode ? (
+              <Typography className="me-muted me-focus-hide" sx={{ mt: 0.2 }}>
+                Painel • Tarefas • Anotações
+              </Typography>
+            ) : null}
           </Box>
 
           {/* Direita: Pontos, Complexidade (ocultos em modo foco ou complexidade simples), Modo foco, Configurações, Sair */}
@@ -116,7 +127,7 @@ export function AppLayout() {
           </Stack>
         </Stack>
 
-        {prefs.focusMode && (
+        {prefs.focusMode && !isNotesFocusMode && (
           <Paper className="me-anim" elevation={0} sx={{ mt: 2, p: 1.5, borderRadius: 3 }}>
             <Typography sx={{ fontWeight: 800 }}>
               Foco ativado: escondendo navegação extra e reduzindo distrações.
@@ -125,7 +136,7 @@ export function AppLayout() {
           </Paper>
         )}
 
-        <Divider sx={{ my: 2 }} />
+        {!isNotesFocusMode ? <Divider sx={{ my: 2 }} /> : null}
 
         {/* Na página Perfil: esconder abas e mostrar contexto claro (evita confusão cognitiva) */}
         {isProfilePage ? (
@@ -144,7 +155,7 @@ export function AppLayout() {
               </Button>
             </Stack>
           </Paper>
-        ) : (
+        ) : isNotesFocusMode ? null : (
           /* Navegação principal: Painel e Tarefas */
           <Paper className={`me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''}`} elevation={0} sx={{ p: 1.2, backgroundColor: 'var(--me-surface-secondary)' }}>
             <Tabs
@@ -156,12 +167,14 @@ export function AppLayout() {
             >
               <Tab value="/panel" label="Painel" icon={<DashboardIcon />} iconPosition="start" />
               <Tab value="/tasks" label="Tarefas" icon={<TaskAltIcon />} iconPosition="start" />
+              <Tab value="/notes" label="Anotações" icon={<NoteIcon />} iconPosition="start" />
+              <Tab value="/store" label="Loja" icon={<RedeemIcon />} iconPosition="start" />
             </Tabs>
           </Paper>
         )}
       </Paper>
 
-      <Box sx={{ mt: 2.5 }}>
+      <Box sx={{ mt: isNotesFocusMode ? 1.5 : 2.5 }}>
         <Outlet />
       </Box>
     </Box>
