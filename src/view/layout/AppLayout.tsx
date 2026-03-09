@@ -52,7 +52,7 @@ export function AppLayout() {
 
   const tab = routeToTab(location.pathname)
   const isProfilePage = location.pathname.startsWith('/profile')
-  const isNotesFocusMode = prefs.focusMode && location.pathname.startsWith('/notes')
+  const isFocusMode = prefs.focusMode
 
   const closeConfigMenu = () => setConfigAnchor(null)
 
@@ -66,7 +66,7 @@ export function AppLayout() {
         role="banner"
         className={`me-topbar me-anim ${prefs.summaryMode ? 'me-summary-compact' : ''} ${prefs.focusMode ? 'me-focus-outline' : ''}`}
         elevation={0}
-        sx={{ p: isNotesFocusMode ? 2 : 2.5, backgroundColor: 'var(--me-surface-secondary)' }}
+        sx={{ p: isFocusMode ? 2 : 2.5, backgroundColor: 'var(--me-surface-secondary)' }}
         aria-label="Cabeçalho da aplicação"
       >
         <Stack
@@ -80,11 +80,6 @@ export function AppLayout() {
             <Typography variant="h4" component="h1" sx={{ fontWeight: 900, letterSpacing: -0.5 }}>
               MindEase
             </Typography>
-            {!isNotesFocusMode ? (
-              <Typography className="me-muted me-focus-hide" sx={{ mt: 0.2 }}>
-                Painel • Tarefas • Anotações
-              </Typography>
-            ) : null}
           </Box>
 
           {/* Direita: Pontos, Complexidade (ocultos em modo foco ou complexidade simples), Modo foco, Configurações, Sair */}
@@ -167,7 +162,7 @@ export function AppLayout() {
           </Stack>
         </Stack>
 
-        {prefs.focusMode && !isNotesFocusMode && (
+        {prefs.focusMode && !isFocusMode && (
           <Paper className="me-anim" elevation={0} sx={{ mt: 2, p: 1.5, borderRadius: 3 }}>
             <Typography sx={{ fontWeight: 800 }}>
               Foco ativado: escondendo navegação extra e reduzindo distrações.
@@ -178,7 +173,7 @@ export function AppLayout() {
           </Paper>
         )}
 
-        {!isNotesFocusMode ? <Divider sx={{ my: 2 }} /> : null}
+        {!isFocusMode ? <Divider sx={{ my: 2 }} /> : null}
 
         {/* Na página Perfil: esconder abas e mostrar contexto claro (evita confusão cognitiva) */}
         {isProfilePage ? (
@@ -207,7 +202,7 @@ export function AppLayout() {
               </Button>
             </Stack>
           </Paper>
-        ) : isNotesFocusMode ? null : (
+        ) : isFocusMode ? null : (
           /* Navegação principal: Painel e Tarefas */
           <Paper
             component="nav"
@@ -222,7 +217,6 @@ export function AppLayout() {
               onChange={(_, v) => navigate(v)}
               variant="scrollable"
               scrollButtons="auto"
-              aria-label="Menu: Painel, Tarefas, Anotações, Loja"
             >
               <Tab value="/panel" label="Painel" icon={<DashboardIcon />} iconPosition="start" />
               <Tab value="/tasks" label="Tarefas" icon={<TaskAltIcon />} iconPosition="start" />
@@ -237,7 +231,7 @@ export function AppLayout() {
         component="main"
         id="main-content"
         role="main"
-        sx={{ mt: isNotesFocusMode ? 1.5 : 2.5 }}
+        sx={{ mt: isFocusMode ? 1.5 : 2.5 }}
         tabIndex={-1}
       >
         <Outlet />
