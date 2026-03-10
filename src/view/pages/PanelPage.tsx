@@ -11,10 +11,9 @@ import { Button } from '../components/Button/Button'
 import type {
   ContrastLevel,
   NavigationProfile,
-  RoutineType,
   CognitiveCondition,
 } from '../../domain/entities/Preferences'
-import { COGNITIVE_PRESETS, ROUTINE_POMODORO } from '../../domain/entities/Preferences'
+import { COGNITIVE_PRESETS } from '../../domain/entities/Preferences'
 import { usePreferencesVM } from '../viewmodels/preferencesVM'
 import { useShellStore } from '../../shared/store/useShellStore'
 
@@ -272,34 +271,6 @@ export function PanelPage() {
               Ao escolher uma necessidade, as preferências acima são ajustadas automaticamente. Você
               pode refiná-las depois.
             </Typography>
-          </Stack>
-
-          <Divider />
-
-          <Stack spacing={2}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-              1️⃣1️⃣ Rotina (Pomodoro)
-            </Typography>
-            <Select<RoutineType>
-              label="Controle"
-              value={preferences.routine}
-              disabled={loading}
-              options={[
-                {
-                  value: 'study',
-                  label: `Estudo — ${ROUTINE_POMODORO.study.focusMinutes} min foco + ${ROUTINE_POMODORO.study.breakMinutes} min pausa`,
-                },
-                {
-                  value: 'work',
-                  label: `Trabalho — ${ROUTINE_POMODORO.work.focusMinutes} min foco + ${ROUTINE_POMODORO.work.breakMinutes} min pausa`,
-                },
-                {
-                  value: 'focus',
-                  label: `Alta concentração — ${ROUTINE_POMODORO.focus.focusMinutes} min foco + ${ROUTINE_POMODORO.focus.breakMinutes} min pausa`,
-                },
-              ]}
-              onChange={(v) => void patch({ routine: v })}
-            />
           </Stack>
 
           <Divider />
