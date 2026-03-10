@@ -27,6 +27,7 @@ export class CreateUserProfileUseCase {
       notes: { folders: {}, documents: {} },
       gamification: {
         pointsBalance: 0,
+        pointsSpent: 0,
         pointsTotalEarned: 0,
         completedTaskIds: {},
         rewards: [

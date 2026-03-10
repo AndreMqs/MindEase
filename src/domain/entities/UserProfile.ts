@@ -21,13 +21,15 @@ export type UserDocument = {
   }
   gamification?: {
     pointsBalance?: number
+    pointsSpent?: number
     pointsTotalEarned?: number
     completedTaskIds?: Record<string, boolean>
     rewards?: Array<{ id: string; title: string; cost: number }>
     redemptionHistory?: Array<{
       id: string
       rewardId: string
-      rewardTitle: string
+      rewardTitle?: string
+      title?: string
       cost: number
       redeemedAtISO: string
     }>

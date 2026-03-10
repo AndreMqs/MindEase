@@ -23,6 +23,7 @@ type GlobalEvent = { type: string; payload?: unknown; at: number }
 
 type UserGamificationState = {
   pointsBalance: number
+  pointsSpent: number
   pointsTotalEarned: number
   completedTaskIds: Record<string, boolean>
   rewards: RewardProduct[]
@@ -82,6 +83,7 @@ function cloneRewards(rewards: RewardProduct[]): RewardProduct[] {
 function buildDefaultGamification(): UserGamificationState {
   return {
     pointsBalance: 0,
+    pointsSpent: 0,
     pointsTotalEarned: 0,
     completedTaskIds: {},
     rewards: cloneRewards(DEFAULT_REWARDS),
@@ -133,7 +135,15 @@ function buildPersistedGamification(
   const fallback = buildDefaultGamification()
   return {
     pointsBalance:
-      typeof input?.pointsBalance === 'number' ? input.pointsBalance : fallback.pointsBalance,
+      typeof input?.pointsBalance === 'number'
+        ? input.pointsBalance
+        : Math.max(0, (typeof input?.pointsTotalEarned === 'number' ? input.pointsTotalEarned : fallback.pointsTotalEarned) - (typeof input?.pointsSpent === 'number' ? input.pointsSpent : (Array.isArray(input?.redemptionHistory) ? input.redemptionHistory.reduce((sum, item) => sum + Math.max(0, Number((item as { cost?: unknown }).cost ?? 0)), 0) : fallback.pointsSpent))),
+    pointsSpent:
+      typeof input?.pointsSpent === 'number'
+        ? input.pointsSpent
+        : Array.isArray(input?.redemptionHistory)
+          ? input.redemptionHistory.reduce((sum, item) => sum + Math.max(0, Number((item as { cost?: unknown }).cost ?? 0)), 0)
+          : fallback.pointsSpent,
     pointsTotalEarned:
       typeof input?.pointsTotalEarned === 'number'
         ? input.pointsTotalEarned
@@ -147,7 +157,15 @@ function buildPersistedGamification(
         ? cloneRewards(input.rewards)
         : fallback.rewards,
     redemptionHistory: Array.isArray(input?.redemptionHistory)
-      ? input.redemptionHistory.map((item) => ({ ...item }))
+      ? input.redemptionHistory.map((item) => ({
+          ...item,
+          rewardTitle:
+            typeof item.rewardTitle === 'string'
+              ? item.rewardTitle
+              : typeof (item as { title?: unknown }).title === 'string'
+                ? String((item as { title?: unknown }).title)
+                : '',
+        }))
       : fallback.redemptionHistory,
   }
 }
@@ -161,10 +179,14 @@ async function persistGamificationForUser(
     await updateDoc(doc(db, 'users', userId), {
       gamification: {
         pointsBalance: gamification.pointsBalance,
+        pointsSpent: gamification.pointsSpent,
         pointsTotalEarned: gamification.pointsTotalEarned,
         completedTaskIds: gamification.completedTaskIds,
         rewards: gamification.rewards,
-        redemptionHistory: gamification.redemptionHistory,
+        redemptionHistory: gamification.redemptionHistory.map((item) => ({
+          ...item,
+          title: item.rewardTitle,
+        })),
       },
     })
   } catch {
@@ -251,6 +273,7 @@ export const useShellStore = create<ShellState>()(
             ...currentGamification,
             completedTaskIds: nextCompletedTaskIds,
             pointsBalance: currentGamification.pointsBalance + points,
+            pointsSpent: currentGamification.pointsSpent,
             pointsTotalEarned: Math.max(0, currentGamification.pointsTotalEarned + points),
           }
           void persistGamificationForUser(state.activeUserId, nextGamification)
@@ -269,6 +292,7 @@ export const useShellStore = create<ShellState>()(
             ...currentGamification,
             completedTaskIds: nextCompletedTaskIds,
             pointsBalance: currentGamification.pointsBalance - points,
+            pointsSpent: currentGamification.pointsSpent,
             pointsTotalEarned: Math.max(0, currentGamification.pointsTotalEarned - points),
           }
           void persistGamificationForUser(state.activeUserId, nextGamification)
@@ -293,6 +317,7 @@ export const useShellStore = create<ShellState>()(
           const nextGamification: UserGamificationState = {
             ...currentGamification,
             completedTaskIds,
+            pointsSpent: spentPoints,
             pointsTotalEarned,
             pointsBalance: pointsTotalEarned - spentPoints,
           }
@@ -344,6 +369,7 @@ export const useShellStore = create<ShellState>()(
           const nextGamification: UserGamificationState = {
             ...latestGamification,
             pointsBalance: latestGamification.pointsBalance - reward.cost,
+            pointsSpent: latestGamification.pointsSpent + reward.cost,
             redemptionHistory: [
               {
                 id: `redeem-${Math.random().toString(16).slice(2)}`,
