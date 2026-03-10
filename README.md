@@ -80,6 +80,15 @@ npm run format:check # verificar formatação sem alterar
 - Limite cognitivo (alerta com 3+ tarefas em “Fazendo”)
 - Preferências aplicadas em tempo real (tema, foco, animações)
 
+### Anotações
+- Bloco de notas por usuário; criação, edição e exclusão
+- Persistência em **Firestore** (`users/{userId}`) quando Firebase está configurado; sincronização entre dispositivos
+
+### Loja (gamificação)
+- Troca de **pontos** por recompensas personalizadas; saldo e histórico de resgates
+- Criar e remover prêmios; custo em pontos por item
+- Pontos ganhos ao concluir tarefas (Kanban); resgate desconta do saldo e persiste no Firebase
+
 ### Perfil
 - **Aba Resumo**: preferências em chips, gamificação (pontos, total ganho), aviso sobre Firebase
 - **Aba Dados e conta**: editar nome e e-mail, **alterar senha** (Firebase: senha atual obrigatória)
@@ -114,7 +123,7 @@ Ou seja: **está pronto para usar microapps quando quiser**; até lá, o app ún
 A web usa **o mesmo projeto Firebase do app mobile** (config em `src/lib/firebase.ts` ou variáveis `VITE_FIREBASE_*` no `.env`). Contratos e estrutura de dados idênticos:
 
 - **Auth**: Firebase Auth (login, registro com nome, logout, recuperar senha, atualizar perfil, alterar senha com reautenticação).
-- **Firestore** `users/{userId}`: `profile`, `preferences`, `kanban.tasks` — tarefas e preferências sincronizadas entre web e mobile.
+- **Firestore** `users/{userId}`: `profile`, `preferences`, `kanban.tasks`, anotações e `gamification` (pontos, recompensas, histórico de resgates) — tarefas, preferências, loja e anotações sincronizadas entre web e mobile.
 
 1. Opcional: criar `.env` a partir de `.env.example` e preencher `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, etc. Se não houver `.env`, a app usa a config padrão do mesmo projeto (ver `src/lib/firebase.ts`).
 2. O `container` em `src/shared/container.ts` já escolhe Firebase quando `isFirebaseConfigured` é true; caso contrário usa FakeAuth + LocalStorage.
