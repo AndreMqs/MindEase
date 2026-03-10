@@ -14,6 +14,8 @@ export default defineConfig({
         './PanelApp': './src/microfrontends/panel/remote.ts',
         './TasksApp': './src/microfrontends/tasks/remote.ts',
         './ProfileApp': './src/microfrontends/profile/remote.ts',
+        './NotesApp': './src/microfrontends/notes/remote.ts',
+        './StoreApp': './src/microfrontends/store/remote.ts',
       },
       // Remotes serão configurados quando você separar os microapps em builds individuais.
       // remotes: { panel: 'http://localhost:5001/assets/remoteEntry.js' },
